@@ -1,0 +1,6 @@
+﻿services:
+  devjobsterapi:
+    image: devjobsterapi
+    build:
+      context: .
+      dockerfile: Dockerfile
