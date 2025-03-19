@@ -1,0 +1,39 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using DevJobsterAPI.Models.Admin;
+
+namespace DevJobsterAPI.Models.Security;
+
+public class Report
+{
+    public int ReportId { get; set; }
+    public Guid? UserId { get; set; }
+    public Guid? RecruiterId { get; set; }
+    public required string Title { get; set; }
+    public required string Body { get; set; }
+    public DateTime CreatedAt { get; set; }
+
+    public User.User? User { get; set; }
+    public Recruiter.Recruiter? Recruiter { get; set; }
+    public List<AdminReport> AdminReports { get; set; } = [];
+
+    [NotMapped]
+    public Guid? ReporterId => UserId ?? RecruiterId;
+
+    [NotMapped]
+    public string? ReporterType
+    {
+        get
+        {
+            if (UserId.HasValue) return "User";
+            return RecruiterId.HasValue ? "Recruiter" : null;
+        }
+    }
+    
+    public Report() {}
+
+    public Report(string title, string body)
+    {
+        Title = title;
+        Body = body;
+    }
+}
