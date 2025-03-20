@@ -14,8 +14,7 @@ public class RegisteredAccount
     public User.User? User { get; set; }
     public Recruiter.Recruiter? Recruiter { get; set; }
     public List<AdminRegisteredAccount> AdminRegisteredAccounts { get; set; } = [];
-
-
+    
     [NotMapped]
     public Guid? AccountId => UserId ?? RecruiterId;
 
