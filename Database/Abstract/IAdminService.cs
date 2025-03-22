@@ -1,3 +1,4 @@
+using DevJobsterAPI.Common;
 using DevJobsterAPI.Models.Admin;
 using DevJobsterAPI.Models.Security;
 
@@ -12,5 +13,5 @@ public interface IAdminService
     Task<IEnumerable<Log>> GetLogsByDateRangeAsync(DateTime startDate, DateTime endDate);
     Task<IEnumerable<RegisteredAccount>> GetRegisteredAccountsAsync();
     Task<RegisteredAccount> GetRegisteredAccountByIdAsync(int accountId);
-    Task UpdateRegisteredAccountStatusAsync(int accountId, bool isChecked);
+    Task<int> UpdateRegisteredAccountStatusAsync(Guid accountId, bool isChecked, UserType userType);
 }
