@@ -10,6 +10,7 @@ public class Report
     public Guid? RecruiterId { get; set; }
     public required string Title { get; set; }
     public required string Body { get; set; }
+    public required Guid ReportObjectId { get; set; }
     public DateTime CreatedAt { get; set; }
 
     public User.User? User { get; set; }
