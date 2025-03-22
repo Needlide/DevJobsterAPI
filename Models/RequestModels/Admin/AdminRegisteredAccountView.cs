@@ -5,9 +5,9 @@ namespace DevJobsterAPI.Models.RequestModels.Admin;
 
 public class AdminRegisteredAccountView(string firstName, string lastName)
 {
-    public required string FirstName { get; set; } = firstName;
-    public required string LastName { get; set; } = lastName;
-    public bool Checked { get; set; } = false;
-    public UserProfileView? UserProfile { get; set; }
-    public RecruiterView? Recruiter { get; set; }
+    public required string FirstName { get; init; } = firstName;
+    public required string LastName { get; init; } = lastName;
+    public bool Checked { get; init; } = false;
+    public UserProfileView? UserProfile { get; init; }
+    public RecruiterView? Recruiter { get; init; }
 }
