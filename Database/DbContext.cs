@@ -3,25 +3,27 @@ using Npgsql;
 
 namespace DevJobsterAPI.Database;
 
-public class DbContext(string connectionString) : IDisposable
+public class DbContext : IDisposable
 {
-    private NpgsqlConnection? _connection;
+    private readonly Lazy<NpgsqlConnection> _connectionLazy;
 
-    public IDbConnection Connection
+    public DbContext(string connectionString)
     {
-        get
+        _connectionLazy = new Lazy<NpgsqlConnection>(() =>
         {
-            if (_connection is { State: ConnectionState.Open }) return _connection;
-            _connection = new NpgsqlConnection(connectionString);
-            _connection.Open();
-            return _connection;
-        }
+            var connection = new NpgsqlConnection(connectionString);
+            connection.Open();
+            return connection;
+        });
     }
+
+    public IDbConnection Connection => _connectionLazy.Value;
+
 
     public void Dispose()
     {
-        if (_connection is not { State: ConnectionState.Open }) return;
-        _connection.Close();
-        _connection.Dispose();
+        if (_connectionLazy is not { IsValueCreated: true, Value.State: ConnectionState.Open }) return;
+        _connectionLazy.Value.Close();
+        _connectionLazy.Value.Dispose();
     }
 }
