@@ -6,6 +6,22 @@ namespace DevJobsterAPI.Models.User;
 
 public class User
 {
+    public User()
+    {
+    }
+
+    public User(string firstName, string lastName, string email, string role, string yearsOfExperience, string location,
+        string englishLevel)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        Role = role;
+        YearsOfExperience = yearsOfExperience;
+        Location = location;
+        EnglishLevel = englishLevel;
+    }
+
     public Guid UserId { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
@@ -22,18 +38,4 @@ public class User
     public List<Report> Reports { get; set; } = [];
     public List<Application> Applications { get; set; } = [];
     public List<RegisteredAccount> RegisteredAccounts { get; set; } = [];
-
-    public User() {}
-
-    public User(string firstName, string lastName, string email, string role, string yearsOfExperience, string location,
-        string englishLevel)
-    {
-        FirstName = firstName;
-        LastName = lastName;
-        Email = email;
-        Role = role;
-        YearsOfExperience = yearsOfExperience;
-        Location = location;
-        EnglishLevel = englishLevel;
-    }
 }

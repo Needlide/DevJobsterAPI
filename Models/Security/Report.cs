@@ -5,6 +5,16 @@ namespace DevJobsterAPI.Models.Security;
 
 public class Report
 {
+    public Report()
+    {
+    }
+
+    public Report(string title, string body)
+    {
+        Title = title;
+        Body = body;
+    }
+
     public int ReportId { get; set; }
     public Guid? UserId { get; set; }
     public Guid? RecruiterId { get; set; }
@@ -17,8 +27,7 @@ public class Report
     public Recruiter.Recruiter? Recruiter { get; set; }
     public List<AdminReport> AdminReports { get; set; } = [];
 
-    [NotMapped]
-    public Guid? ReporterId => UserId ?? RecruiterId;
+    [NotMapped] public Guid? ReporterId => UserId ?? RecruiterId;
 
     [NotMapped]
     public string? ReporterType
@@ -28,13 +37,5 @@ public class Report
             if (UserId.HasValue) return "User";
             return RecruiterId.HasValue ? "Recruiter" : null;
         }
-    }
-    
-    public Report() {}
-
-    public Report(string title, string body)
-    {
-        Title = title;
-        Body = body;
     }
 }

@@ -29,7 +29,7 @@ public partial class UserUpdateValidator : AbstractValidator<UserUpdate>
             .NotEmpty().WithMessage("English level is required")
             .Length(1);
     }
-    
+
     [GeneratedRegex(@"^(?:[0-9]|[1-9][0-9]|[1-9][0-9]{2})$")]
     private static partial Regex YearsOfExperienceRegex();
 }

@@ -8,5 +8,4 @@ builder.Services.AddValidatorsFromAssemblyContaining<RecruiterUpdateValidator>()
 var app = builder.Build();
 
 
-
 app.Run();

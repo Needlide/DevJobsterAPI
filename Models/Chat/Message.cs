@@ -4,6 +4,16 @@ namespace DevJobsterAPI.Models.Chat;
 
 public class Message
 {
+    public Message()
+    {
+    }
+
+    public Message(string body, Chat chat)
+    {
+        Chat = chat;
+        Body = body;
+    }
+
     public Guid MessageId { get; set; }
     public required string Body { get; set; }
     public Guid ChatId { get; set; }
@@ -15,8 +25,7 @@ public class Message
     public User.User? User { get; set; }
     public Recruiter.Recruiter? Recruiter { get; set; }
 
-    [NotMapped]
-    public Guid? SenderId => UserId ?? RecruiterId;
+    [NotMapped] public Guid? SenderId => UserId ?? RecruiterId;
 
     [NotMapped]
     public string? SenderType
@@ -26,13 +35,5 @@ public class Message
             if (UserId.HasValue) return "User";
             return RecruiterId.HasValue ? "Recruiter" : null;
         }
-    }
-    
-    public Message() {}
-
-    public Message(string body, Chat chat)
-    {
-        Chat = chat;
-        Body = body;
     }
 }

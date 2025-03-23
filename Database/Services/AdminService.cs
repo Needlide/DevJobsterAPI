@@ -62,7 +62,8 @@ public class AdminService(DbContext dbContext) : IAdminService
         using var connection = dbContext.Connection;
         var sql = "UPDATE registered_accounts SET checked = @isChecked";
 
-        sql = string.Concat(sql, userType == UserType.User ? "WHERE user_id = @accountId" : "WHERE recruiter_id = @accountId");
+        sql = string.Concat(sql,
+            userType == UserType.User ? "WHERE user_id = @accountId" : "WHERE recruiter_id = @accountId");
 
         return await connection.ExecuteAsync(sql, new { accountId, @checked = isChecked });
     }

@@ -16,11 +16,13 @@ public partial class RecruiterUpdateValidator : AbstractValidator<RecruiterUpdat
         RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage("Phone number is required")
             .MaximumLength(12).WithMessage("Phone number cannot exceed 12 characters")
-            .Matches(PhoneNumberRegex()).WithMessage("Invalid phone number format. Must start with '+' and contain only digits, up to 11 digits after the +");
+            .Matches(PhoneNumberRegex())
+            .WithMessage(
+                "Invalid phone number format. Must start with '+' and contain only digits, up to 11 digits after the +");
         RuleFor(x => x.Notes)
             .MaximumLength(250).WithMessage("Notes cannot exceed 250 characters");
     }
-    
+
     [GeneratedRegex(@"^\+?(\d[\s-()]*){1,11}$")]
     private static partial Regex PhoneNumberRegex();
 }

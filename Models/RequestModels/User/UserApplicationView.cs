@@ -1,6 +1,12 @@
 namespace DevJobsterAPI.Models.RequestModels.User;
 
-public class UserApplicationView(string firstName, string lastName, string role, string location, string yearsOfExperience, string englishLevel)
+public class UserApplicationView(
+    string firstName,
+    string lastName,
+    string role,
+    string location,
+    string yearsOfExperience,
+    string englishLevel)
 {
     public required string FirstName { get; set; } = firstName;
     public required string LastName { get; set; } = lastName;
