@@ -7,17 +7,15 @@ public interface IUserManagementService
 {
     Task<IEnumerable<User>> GetAllUsersAsync();
     Task<User> GetUserByIdAsync(Guid userId);
-    Task CreateUserAsync(User user);
-    Task UpdateUserAsync(User user);
-    Task DeleteUserAsync(Guid userId);
+    Task<int> CreateUserAsync(User user);
+    Task<int> UpdateUserAsync(User user);
+    Task<int> DeleteUserAsync(Guid userId);
 
     Task<IEnumerable<Recruiter>> GetAllRecruitersAsync();
     Task<Recruiter> GetRecruiterByIdAsync(Guid recruiterId);
-    Task CreateRecruiterAsync(Recruiter recruiter);
-    Task UpdateRecruiterAsync(Recruiter recruiter);
-    Task DeleteRecruiterAsync(Guid recruiterId);
+    Task<int> CreateRecruiterAsync(Recruiter recruiter);
+    Task<int> UpdateRecruiterAsync(Recruiter recruiter);
+    Task<int> DeleteRecruiterAsync(Guid recruiterId);
 
-    Task AuthenticateUserAsync(Guid userId, string password);
-    Task ResetPasswordAsync(Guid userId, string newPassword);
-    Task ChangePasswordAsync(Guid userId, string oldPassword, string newPassword);
+    Task<int> ResetPasswordAsync(Guid userId, string newPassword);
 }
