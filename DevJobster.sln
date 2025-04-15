@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevJobsterAPI", "DevJobsterAPI.csproj", "{272D6569-680C-49FB-8C85-BBA87D2BF734}"
+# 
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevJobsterAPI", "DevJobsterAPI\DevJobsterAPI.csproj", "{272D6569-680C-49FB-8C85-BBA87D2BF734}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7AD95AAC-89D8-400F-ABE5-E9B7849C876F}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevJobsterAPI.Tests", "DevJobsterAPI.Tests\DevJobsterAPI.Tests.csproj", "{8BE76466-785C-4141-97FA-6A5B37DD5A5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,5 +20,9 @@ Global
 		{272D6569-680C-49FB-8C85-BBA87D2BF734}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{272D6569-680C-49FB-8C85-BBA87D2BF734}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{272D6569-680C-49FB-8C85-BBA87D2BF734}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BE76466-785C-4141-97FA-6A5B37DD5A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BE76466-785C-4141-97FA-6A5B37DD5A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BE76466-785C-4141-97FA-6A5B37DD5A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BE76466-785C-4141-97FA-6A5B37DD5A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
