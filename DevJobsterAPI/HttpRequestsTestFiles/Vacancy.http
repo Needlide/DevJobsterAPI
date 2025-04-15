@@ -1,0 +1,58 @@
+@baseUrl = http://localhost:5068/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZjhmYWQ1Yi1kOWNiLTQ2OWYtYTE2NS03MDg2NzcyODk1MGUiLCJqdGkiOiI3OWYwNjA5My1jMTQ1LTQ4ZDAtYjQyNi0yYjU2MDY3OGIwNjkiLCJpYXQiOjE3NDQ0Njg2NjQsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDQ2ODY2NCwiZXhwIjoxNzQ1MDczNDY0LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwNjgvYXBpIiwiYXVkIjoieW91ci1jbGllbnQtYXBwIn0.JkpT8MwgFVyJaoK4oZoiyVXAqXhpuO7J7dplKRzQQN0
+
+### Retrieve all vacancies
+GET {{baseUrl}}/vacancies
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Retrieve vacancy by id
+GET {{baseUrl}}/vacancies/IDHERE
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Create vacancy
+POST {{baseUrl}}/vacancies
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "Title": "Cool vacancy title",
+  "Description": "Cool vacancy description",
+  "Salary": 1233,
+  "Requirements": "Cool requirements",
+  "CompanyWebsite": "https://natribu.org",
+  "TypeOfJob": "2",
+  "Location": "1",
+  "Country": "Armenia",
+  "RecruiterId": "",
+  "Benefits": "Nothing"
+}
+
+### Update vacancy
+PUT {{baseUrl}}/vacancies/IDHERE
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "Description": "New not so cool vacancy description",
+  "Salary": 1233,
+  "Requirements": "New not so cool requirements",
+  "CompanyWebsite": "https://natribu.org",
+  "TypeOfJob": "3",
+  "Location": "3",
+  "VacancyId": "IDHERE",
+  "Benefits": "Still nothing new"
+}
+
+### Delete vacancy
+DELETE {{baseUrl}}/vacancies/IDHERE
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Get applications for the vacancy
+GET {{baseUrl}}/vacancies/IDHERE/applications
+Authorization: Bearer {{token}}
+Accept: application/json

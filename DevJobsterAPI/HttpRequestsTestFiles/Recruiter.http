@@ -1,0 +1,68 @@
+@baseUrl = http://localhost:5068/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZGMxOTkzMy1jNDk2LTRmOWMtOGEzYy1lNjNjNWJkMWM5ZGQiLCJqdGkiOiI2YzM1OTI3OC1kODNmLTQ2NGItYjNiYS01MDhiYzIyNzc1ZDYiLCJpYXQiOjE3NDQ2NDk1MjIsInJvbGUiOiJSZWNydWl0ZXIiLCJuYW1laWQiOiIzZGMxOTkzMy1jNDk2LTRmOWMtOGEzYy1lNjNjNWJkMWM5ZGQiLCJuYmYiOjE3NDQ2NDk1MjIsImV4cCI6MTc0NTI1NDMyMiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDY4L2FwaSIsImF1ZCI6InlvdXItY2xpZW50LWFwcCJ9.m96KtQ9wZy-ZSKwE-Jr2s85Y6iDAV44240r57W69hz8
+
+### Register new recruiter
+POST {{baseUrl}}/recruiters
+Content-Type: application/json
+
+{
+  "email": "recruiter12@example.com",
+  "password": "RecruiterPass"
+}
+
+### Login recruiter
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "recruiter12@example.com",
+  "password": "newpass"
+}
+
+### Update recruiter
+PUT {{baseUrl}}/recruiters/962eb2d3-a60a-4be2-baa2-ddbf57c3c7ef
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "firstName": "First name recruiter",
+  "lastName": "Last name recruiter",
+  "phoneNumber": "838hoe38y9",
+  "company": "company",
+  "notes": "my notes agdugf;dsbgsidgbsi;gbisg;sdgbygv"
+}
+
+### Reset password
+POST {{baseUrl}}/recruiters/reset-password
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "userId": "3dc19933-c496-4f9c-8a3c-e63c5bd1c9dd",
+  "password": "newpass"
+}
+
+### Delete recruiter
+DELETE {{baseUrl}}/recruiters/3dc19933-c496-4f9c-8a3c-e63c5bd1c9dd
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Create vacancy
+POST {{baseUrl}}/vacancies
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "Title": "First Vacancy",
+  "Description": "First vacancy created by recruiter",
+  "Salary": 3214,
+  "Requirements": "Nothing really",
+  "CompanyWebsite": "https://example.com",
+  "TypeOfJob": "2",
+  "Location": "1",
+  "Country": "Latina",
+  "RecruiterId": "3dc19933-c496-4f9c-8a3c-e63c5bd1c9dd"
+}

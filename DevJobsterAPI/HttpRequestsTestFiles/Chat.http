@@ -1,0 +1,23 @@
+@baseUrl = http://localhost:5068/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MjgxZDkwMi1jOTc2LTRlZjAtODI2MS1hMjM5NDJjNDE0NjQiLCJqdGkiOiJhMGZlYzVlYi05NGEwLTQ0YWQtYWNhMi0wNWYyNzE4ODFlYzUiLCJpYXQiOjE3NDQ0Nzg5NzQsInJvbGUiOiJVc2VyIiwibmJmIjoxNzQ0NDc4OTc0LCJleHAiOjE3NDUwODM3NzQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA2OC9hcGkiLCJhdWQiOiJ5b3VyLWNsaWVudC1hcHAifQ.vcL6icxHvgkKYAqEZZkrCPGL-LkvBQ7vDRdSUpSuJKM
+
+### Get chat by ID
+GET {{baseUrl}}/chats/IDHERE
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Create chat
+POST {{baseUrl}}/chats
+Authorization: Bearer {{token}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "userId": "5281d902-c976-4ef0-8261-a23942c41464",
+  "recruiterId": ""
+}
+
+### Get messages from chat
+GET {{baseUrl}}/chats/IDHERE/messages
+Authorization: Bearer {{token}}
+Accept: application/json

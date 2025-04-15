@@ -1,0 +1,86 @@
+@baseUrl = http://localhost:5068/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZjhmYWQ1Yi1kOWNiLTQ2OWYtYTE2NS03MDg2NzcyODk1MGUiLCJqdGkiOiI3OWYwNjA5My1jMTQ1LTQ4ZDAtYjQyNi0yYjU2MDY3OGIwNjkiLCJpYXQiOjE3NDQ0Njg2NjQsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDQ2ODY2NCwiZXhwIjoxNzQ1MDczNDY0LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUwNjgvYXBpIiwiYXVkIjoieW91ci1jbGllbnQtYXBwIn0.JkpT8MwgFVyJaoK4oZoiyVXAqXhpuO7J7dplKRzQQN0
+
+###
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "exampleAdminMail@example.com",
+  "password": "adminpassword"
+}
+
+### 👮 Get all admins
+GET {{baseUrl}}/admin/admins
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 👮 Get admin by ID
+GET {{baseUrl}}/admin/admins/0f8fad5b-d9cb-469f-a165-70867728950e
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 📊 Get all reports
+GET {{baseUrl}}/admin/reports
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 📊 Get report by ID
+GET {{baseUrl}}/admin/reports/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 📜 Get logs by date range
+GET {{baseUrl}}/admin/logs?startDate=2024-01-01T00:00:00&endDate=2025-04-12T17:30:00
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 👥 Get all registered accounts
+GET {{baseUrl}}/admin/accounts
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 👤 Get registered account by ID
+GET {{baseUrl}}/admin/accounts/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 🔄 Update registered account status
+PUT {{baseUrl}}/admin/accounts/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "registeredAccountId": 1,
+  "isChecked": true
+}
+
+### Get all users
+GET {{baseUrl}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Get user by ID
+GET {{baseUrl}}/users/5281d902-c976-4ef0-8261-a23942c41464
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Delete user by ID
+DELETE {{baseUrl}}/users/5281d902-c976-4ef0-8261-a23942c41464
+Authorization: Bearer {{token}}
+Content-Type: application/json

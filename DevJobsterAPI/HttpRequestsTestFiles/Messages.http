@@ -1,0 +1,10 @@
+@baseUrl = http://localhost:5068/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MjgxZDkwMi1jOTc2LTRlZjAtODI2MS1hMjM5NDJjNDE0NjQiLCJqdGkiOiJhMGZlYzVlYi05NGEwLTQ0YWQtYWNhMi0wNWYyNzE4ODFlYzUiLCJpYXQiOjE3NDQ0Nzg5NzQsInJvbGUiOiJVc2VyIiwibmJmIjoxNzQ0NDc4OTc0LCJleHAiOjE3NDUwODM3NzQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA2OC9hcGkiLCJhdWQiOiJ5b3VyLWNsaWVudC1hcHAifQ.vcL6icxHvgkKYAqEZZkrCPGL-LkvBQ7vDRdSUpSuJKM
+
+### Get message by id
+GET {{baseUrl}}/messages/IDHERE
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Create message
+POST {{baseUrl}}/messages
