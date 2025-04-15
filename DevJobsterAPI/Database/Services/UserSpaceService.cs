@@ -105,7 +105,8 @@ public class UserSpaceService(IDbContext dbContext) : IUserSpaceService
                                VALUES (@UserId, @VacancyId, @CreatedAt)
                                RETURNING application_id;
                                """;
-            return await dbContext.Connection.ExecuteScalarAsync<int>(sql, new { UserId = userId, addApplication.VacancyId, CreatedAt = DateTime.UtcNow });
+            return await dbContext.Connection.ExecuteScalarAsync<int>(sql,
+                new { UserId = userId, addApplication.VacancyId, CreatedAt = DateTime.UtcNow });
         }
         catch (PostgresException e)
         {
@@ -291,7 +292,7 @@ public class UserSpaceService(IDbContext dbContext) : IUserSpaceService
 
         return count > 0;
     }
-    
+
     public async Task<int> CreateReportAsync(AddReport report)
     {
         try

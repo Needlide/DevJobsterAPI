@@ -21,13 +21,11 @@ public static class ApplicationEndpointExtension
                 {
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                    if (userId is null)
-                    {
-                        return TypedResults.BadRequest();
-                    }
-                    
-                    var applicationId = await userSpaceService.CreateApplicationAsync(Guid.Parse(userId),  addApplication);
-                         return applicationId > 0
+                    if (userId is null) return TypedResults.BadRequest();
+
+                    var applicationId =
+                        await userSpaceService.CreateApplicationAsync(Guid.Parse(userId), addApplication);
+                    return applicationId > 0
                         ? TypedResults.Created($"/api/applications/{applicationId}", addApplication)
                         : TypedResults.BadRequest();
                 })

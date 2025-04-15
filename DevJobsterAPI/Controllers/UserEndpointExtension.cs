@@ -70,31 +70,35 @@ public static class UserEndpointExtension
             .WithValidation<UserAuthentication>()
             .RequireAuthorization("UserOnly");
 
-        userGroup.MapGet("/{userId:guid}/applications", async Task<Results<Ok<IEnumerable<Application>>, BadRequest>> (ClaimsPrincipal user, IUserSpaceService spaceService) =>
-        {
-            var senderId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            
-            if (senderId is null)
-                return TypedResults.BadRequest();
-            
-            var userId = Guid.Parse(senderId);
-            
-            var userApplications = await spaceService.GetApplicationsByUserIdAsync(userId);
-            return TypedResults.Ok(userApplications);
-        }).RequireAuthorization("UserOnly");
-
-        userGroup.MapGet("/{userId:guid}/chats", async Task<Results<Ok<IEnumerable<Chat>>, BadRequest>> (ClaimsPrincipal user, IUserSpaceService spaceService) =>
+        userGroup.MapGet("/{userId:guid}/applications",
+            async Task<Results<Ok<IEnumerable<Application>>, BadRequest>> (ClaimsPrincipal user,
+                IUserSpaceService spaceService) =>
             {
                 var senderId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            
+
                 if (senderId is null)
                     return TypedResults.BadRequest();
-            
+
                 var userId = Guid.Parse(senderId);
-                
-                var userChats = await spaceService.GetChatsForUserAsync(userId);
-                return TypedResults.Ok(userChats);
-            })
+
+                var userApplications = await spaceService.GetApplicationsByUserIdAsync(userId);
+                return TypedResults.Ok(userApplications);
+            }).RequireAuthorization("UserOnly");
+
+        userGroup.MapGet("/{userId:guid}/chats",
+                async Task<Results<Ok<IEnumerable<Chat>>, BadRequest>> (ClaimsPrincipal user,
+                    IUserSpaceService spaceService) =>
+                {
+                    var senderId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    if (senderId is null)
+                        return TypedResults.BadRequest();
+
+                    var userId = Guid.Parse(senderId);
+
+                    var userChats = await spaceService.GetChatsForUserAsync(userId);
+                    return TypedResults.Ok(userChats);
+                })
             .RequireAuthorization("UserOnly");
 
         return app;

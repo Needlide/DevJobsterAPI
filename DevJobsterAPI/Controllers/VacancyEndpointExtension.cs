@@ -20,10 +20,10 @@ public static class VacancyEndpointExtension
         }).RequireAuthorization("UserAndAdminOnly");
 
         vacancyGroup.MapGet("/{vacancyId:guid}",
-            async Task<Results<Ok<Vacancy>, NotFound>> (Guid vacancyId, IUserSpaceService userSpaceService) =>
-                await userSpaceService.GetVacancyByIdAsync(vacancyId) is { } vacancy
-                    ? TypedResults.Ok(vacancy)
-                    : TypedResults.NotFound())
+                async Task<Results<Ok<Vacancy>, NotFound>> (Guid vacancyId, IUserSpaceService userSpaceService) =>
+                    await userSpaceService.GetVacancyByIdAsync(vacancyId) is { } vacancy
+                        ? TypedResults.Ok(vacancy)
+                        : TypedResults.NotFound())
             .RequireAuthorization();
 
         vacancyGroup.MapPost("/",

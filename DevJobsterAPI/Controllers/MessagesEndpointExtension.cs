@@ -43,14 +43,14 @@ public static class MessagesEndpointExtension
 
                     if (!isPartOfChat)
                         return TypedResults.Forbid();
-                    
+
                     var message = new AddMessageWithSender(
-                        MessageId: Guid.NewGuid(),
-                        ChatId: addMessage.ChatId,
-                        Body: addMessage.Body,
-                        SenderId: Guid.Parse(senderId),
-                        SenderRole: role,
-                        CreatedAt: DateTime.UtcNow
+                        Guid.NewGuid(),
+                        addMessage.ChatId,
+                        addMessage.Body,
+                        Guid.Parse(senderId),
+                        role,
+                        DateTime.UtcNow
                     );
 
                     var result = await userSpaceService.CreateMessageAsync(message);

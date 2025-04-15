@@ -83,7 +83,7 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
                     """;
 
                 userRegistration.UserAuthentication.UserId = userRegistration.User.UserId;
-                
+
                 await dbContext.Connection.ExecuteAsync(
                     authSql,
                     new
@@ -91,7 +91,7 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
                         userRegistration.UserAuthentication.AuthId,
                         userRegistration.UserAuthentication.UserId,
                         PasswordHash = PasswordService.HashPassword(userRegistration.UserAuthentication.Password)
-                    }, 
+                    },
                     transaction);
 
                 // Insert user into registered accounts
@@ -108,10 +108,7 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
             }
             catch
             {
-                if (transaction.Connection != null)
-                {
-                    transaction.Rollback();
-                }
+                if (transaction.Connection != null) transaction.Rollback();
                 throw;
             }
         }
@@ -134,18 +131,18 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
                     WHERE user_id = @UserId;
                 """;
             return await dbContext.Connection.ExecuteAsync(
-                sql, 
+                sql,
                 new
-            {
-                UserId = userId,
-                user.FirstName,
-                user.LastName,
-                user.Role,
-                user.Skills,
-                user.YearsOfExperience,
-                user.Location,
-                user.EnglishLevel
-            });
+                {
+                    UserId = userId,
+                    user.FirstName,
+                    user.LastName,
+                    user.Role,
+                    user.Skills,
+                    user.YearsOfExperience,
+                    user.Location,
+                    user.EnglishLevel
+                });
         }
         catch (PostgresException e)
         {
@@ -237,7 +234,7 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
                     """;
 
                 recruiterRegistration.UserAuthentication.UserId = recruiterRegistration.Recruiter.RecruiterId;
-                
+
                 await dbContext.Connection.ExecuteAsync(
                     authSql,
                     new
@@ -262,10 +259,7 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
             }
             catch
             {
-                if (transaction.Connection != null)
-                {
-                    transaction.Rollback();
-                }
+                if (transaction.Connection != null) transaction.Rollback();
                 throw;
             }
         }
@@ -308,10 +302,10 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
             {
                 const string sqlVacancies = "DELETE FROM vacancies WHERE recruiter_id = @RecruiterId";
                 await dbContext.Connection.ExecuteAsync(sqlVacancies, new { RecruiterId = recruiterId }, transaction);
-                
+
                 const string sql = "DELETE FROM recruiters WHERE recruiter_id = @RecruiterId;";
                 await dbContext.Connection.ExecuteAsync(sql, new { RecruiterId = recruiterId }, transaction);
-                
+
                 transaction.Commit();
 
                 return 1;
@@ -335,7 +329,7 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
             const string sql = "UPDATE user_authentication SET password_hash = @NewPassword WHERE user_id = @UserId;";
 
             var passwordHash = PasswordService.HashPassword(userAuthentication.Password);
-            
+
             return await dbContext.Connection.ExecuteAsync(sql,
                 new { NewPassword = passwordHash, userAuthentication.UserId });
         }
@@ -374,9 +368,9 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
                         transaction) ?? string.Empty;
 
                 var isValid = PasswordService.VerifyPassword(loginRegisterModel.Password, passwordHash);
-                                
+
                 transaction.Commit();
-                
+
                 return new ValidateUserResult(uniUser.UserId, uniUser.UserType, isValid);
             }
             catch

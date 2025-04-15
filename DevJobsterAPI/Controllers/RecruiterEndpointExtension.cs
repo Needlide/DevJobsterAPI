@@ -31,16 +31,18 @@ public static class RecruiterEndpointExtension
 
         recruiterGroup.MapPost("/",
                 async Task<Results<Created<Recruiter>, BadRequest>> (LoginRegisterModel registration,
-                        IUserManagementService userService) =>
+                    IUserManagementService userService) =>
                 {
-                    var recruiter = new Recruiter(string.Empty, string.Empty, registration.Email, string.Empty, string.Empty);
+                    var recruiter = new Recruiter(string.Empty, string.Empty, registration.Email, string.Empty,
+                        string.Empty);
 
                     var userAuthentication = new UserAuthentication(recruiter.RecruiterId, registration.Password);
-                    
+
                     var recruiterRegistration = new RecruiterRegistration(recruiter, userAuthentication);
-                    
+
                     return await userService.CreateRecruiterAsync(recruiterRegistration) > 0
-                        ? TypedResults.Created($"/api/recruiters/{recruiterRegistration.Recruiter.RecruiterId}", recruiter)
+                        ? TypedResults.Created($"/api/recruiters/{recruiterRegistration.Recruiter.RecruiterId}",
+                            recruiter)
                         : TypedResults.BadRequest();
                 })
             .WithValidation<RecruiterRegistration>();
@@ -57,7 +59,7 @@ public static class RecruiterEndpointExtension
                         return TypedResults.BadRequest();
 
                     var recruiterId = Guid.Parse(senderId);
-                    
+
                     return await userService.UpdateRecruiterAsync(recruiterId, recruiter) > 0
                         ? TypedResults.NoContent()
                         : TypedResults.NotFound();

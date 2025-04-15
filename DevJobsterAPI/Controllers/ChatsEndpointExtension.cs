@@ -23,10 +23,7 @@ public static class ChatsEndpointExtension
                 {
                     var chatId = await userSpaceService.CreateChatAsync(chat);
 
-                    if (chatId == Guid.Empty)
-                    {
-                        return TypedResults.BadRequest();
-                    }
+                    if (chatId == Guid.Empty) return TypedResults.BadRequest();
 
                     return TypedResults.Created($"/api/chats/{chatId}", chatId);
                 })
