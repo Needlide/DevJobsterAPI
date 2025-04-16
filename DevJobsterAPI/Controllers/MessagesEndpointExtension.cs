@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using DevJobsterAPI.Common;
 using DevJobsterAPI.Database.Abstract;
-using DevJobsterAPI.DatabaseModels.Chat;
 using DevJobsterAPI.DatabaseModels.RequestModels.Chat;
 using DevJobsterAPI.DatabaseModels.RequestModels.Chat.Validators;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -15,10 +14,23 @@ public static class MessagesEndpointExtension
         var messageGroup = app.MapGroup("/api/messages");
 
         messageGroup.MapGet("/{messageId:guid}",
-                async Task<Results<Ok<Message>, NotFound>> (Guid messageId, IUserSpaceService userSpaceService) =>
-                    await userSpaceService.GetMessageByIdAsync(messageId) is { } message
-                        ? TypedResults.Ok(message)
-                        : TypedResults.NotFound())
+                async Task<Results<Ok<MessageView>, NotFound>> (Guid messageId, IUserSpaceService userSpaceService) =>
+                {
+                    var message = await userSpaceService.GetMessageByIdAsync(messageId);
+
+                    if (message == null)
+                    {
+                        return TypedResults.NotFound();
+                    }
+
+                    var messageView = new MessageView(
+                        message.Body,
+                        message.ChatId,
+                        message.UserId,
+                        message.RecruiterId);
+                    
+                    return TypedResults.Ok(messageView);
+                })
             .RequireAuthorization();
 
         messageGroup.MapPost("/",
