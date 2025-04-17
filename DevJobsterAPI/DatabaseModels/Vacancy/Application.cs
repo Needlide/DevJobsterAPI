@@ -25,9 +25,7 @@ public class Application
     public Guid UserId { get; init; }
     public Guid VacancyId { get; init; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
-
-    // Dapper will fill these properties
-    // so telling compiler they're not null
+    
     public User.User? User { get; init; }
     public Vacancy? Vacancy { get; init; }
 }
