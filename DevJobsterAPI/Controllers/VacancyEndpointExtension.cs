@@ -1,5 +1,6 @@
 using DevJobsterAPI.Common;
 using DevJobsterAPI.Database.Abstract;
+using DevJobsterAPI.DatabaseModels.RequestModels.User;
 using DevJobsterAPI.DatabaseModels.RequestModels.Vacancy;
 using DevJobsterAPI.DatabaseModels.Vacancy;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -13,17 +14,28 @@ public static class VacancyEndpointExtension
         var vacancyGroup = app.MapGroup("/api/vacancies")
             .WithTags("Vacancies"); // Swagger grouping
 
-        vacancyGroup.MapGet("/", async (IUserSpaceService userSpaceService) =>
+        vacancyGroup.MapGet("/", async (IUserSpaceService userSpaceService, IUserManagementService userManagementService) =>
         {
             var vacancies = await userSpaceService.GetAllVacanciesAsync();
-            return TypedResults.Ok(vacancies);
+
+            var vacancyViews = vacancies.Select(async v => new VacancyView(
+                v.Title, v.Description, v.Requirements, v.CompanyWebsite, v.TypeOfJob, v.Location, v.Country, v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId)));
+            
+            return TypedResults.Ok(vacancyViews);
         }).RequireAuthorization("UserAndAdminOnly");
 
         vacancyGroup.MapGet("/{vacancyId:guid}",
-                async Task<Results<Ok<Vacancy>, NotFound>> (Guid vacancyId, IUserSpaceService userSpaceService) =>
-                    await userSpaceService.GetVacancyByIdAsync(vacancyId) is { } vacancy
-                        ? TypedResults.Ok(vacancy)
-                        : TypedResults.NotFound())
+                async Task<Results<Ok<VacancyView>, NotFound>> (Guid vacancyId, IUserSpaceService userSpaceService, IUserManagementService userManagementService) =>
+                {
+                    var v = await userSpaceService.GetVacancyByIdAsync(vacancyId);
+
+                    if (v is null)
+                        return TypedResults.NotFound();
+
+                    var vacancyView = new VacancyView( v.Title, v.Description, v.Requirements, v.CompanyWebsite, v.TypeOfJob, v.Location, v.Country, v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId));
+
+                    return TypedResults.Ok(vacancyView);
+                })
             .RequireAuthorization();
 
         vacancyGroup.MapPost("/",
@@ -55,10 +67,31 @@ public static class VacancyEndpointExtension
             .RequireAuthorization("RecruiterAndAdminOnly");
 
         vacancyGroup.MapGet("/{vacancyId:guid}/applications",
-            async (Guid vacancyId, IUserSpaceService userSpaceService) =>
+            async (Guid vacancyId, IUserSpaceService userSpaceService, IUserManagementService userManagementService) =>
             {
                 var vacancyApplications = await userSpaceService.GetApplicationsByVacancyIdAsync(vacancyId);
-                return TypedResults.Ok(vacancyApplications);
+
+                var vacancyApplicationViews = new List<UserApplicationView>();
+
+                foreach (var va in vacancyApplications)
+                {
+                    var applicationUser = va.User ?? await userManagementService.GetUserByIdAsync(va.UserId);
+
+                    if (applicationUser is null)
+                    {
+                        continue;
+                    }
+                    
+                    vacancyApplicationViews.Add(new UserApplicationView(
+                        applicationUser.FirstName,
+                        applicationUser.LastName,
+                        applicationUser.Role,
+                        applicationUser.Location,
+                        applicationUser.YearsOfExperience,
+                        applicationUser.EnglishLevel));
+                }
+                
+                return TypedResults.Ok(vacancyApplicationViews);
             }).RequireAuthorization("RecruiterOnly");
 
         return app;
