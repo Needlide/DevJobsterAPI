@@ -21,14 +21,23 @@ public static class UserEndpointExtension
         userGroup.MapGet("/", async (IUserManagementService service) =>
         {
             var users = await service.GetAllUsersAsync();
-            return TypedResults.Ok(users);
+            
+            var userViews = users.Select(u => new UserProfileView(u.FirstName, u.LastName, u.Role, u.Skills, u.Location, u.YearsOfExperience, u.EnglishLevel));
+            
+            return TypedResults.Ok(userViews);
         }).RequireAuthorization("AdminOnly");
 
         userGroup.MapGet("/{userId}",
-                async Task<Results<Ok<User>, NotFound>> (Guid userId, IUserManagementService userService) =>
-                    await userService.GetUserByIdAsync(userId) is { } user
-                        ? TypedResults.Ok(user)
-                        : TypedResults.NotFound())
+                async Task<Results<Ok<UserProfileView>, NotFound>> (Guid userId, IUserManagementService userService) =>
+                {
+                    var user = await userService.GetUserByIdAsync(userId);
+                    
+                    if (user == null)
+                        return TypedResults.NotFound();
+
+                    var userView = new UserProfileView(user.FirstName, user.LastName, user.Role, user.Skills, user.Location, user.YearsOfExperience, user.EnglishLevel);
+                    return TypedResults.Ok(userView);
+                })
             .RequireAuthorization();
 
         userGroup.MapPost("/",
@@ -71,8 +80,10 @@ public static class UserEndpointExtension
             .RequireAuthorization("UserOnly");
 
         userGroup.MapGet("/{userId:guid}/applications",
-            async Task<Results<Ok<IEnumerable<Application>>, BadRequest>> (ClaimsPrincipal user,
-                IUserSpaceService spaceService) =>
+            async Task<Results<Ok<List<UserApplicationView>>, BadRequest>> (
+                ClaimsPrincipal user,
+                IUserSpaceService spaceService,
+                IUserManagementService userService) =>
             {
                 var senderId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -82,7 +93,33 @@ public static class UserEndpointExtension
                 var userId = Guid.Parse(senderId);
 
                 var userApplications = await spaceService.GetApplicationsByUserIdAsync(userId);
-                return TypedResults.Ok(userApplications);
+
+                var userApplicationViews = new List<UserApplicationView>();
+
+                foreach (var ua in userApplications)
+                {
+                    var applicationUser = ua.User;
+
+                    if (applicationUser is null)
+                    {
+                        applicationUser = await userService.GetUserByIdAsync(ua.UserId);
+
+                        if (applicationUser is null)
+                        {
+                            continue;
+                        }
+                    }
+
+                    userApplicationViews.Add(new UserApplicationView(
+                        applicationUser.FirstName,
+                        applicationUser.LastName,
+                        applicationUser.Role,
+                        applicationUser.Location,
+                        applicationUser.YearsOfExperience,
+                        applicationUser.EnglishLevel));
+                }
+
+                return TypedResults.Ok(userApplicationViews);
             }).RequireAuthorization("UserOnly");
 
         userGroup.MapGet("/{userId:guid}/chats",
