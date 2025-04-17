@@ -6,7 +6,6 @@ using DevJobsterAPI.DatabaseModels.RequestModels.Security;
 using DevJobsterAPI.DatabaseModels.RequestModels.User;
 using DevJobsterAPI.DatabaseModels.Security;
 using DevJobsterAPI.DatabaseModels.User;
-using DevJobsterAPI.DatabaseModels.Vacancy;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace DevJobsterAPI.Controllers;
@@ -89,25 +88,18 @@ public static class UserEndpointExtension
 
                 if (senderId is null)
                     return TypedResults.BadRequest();
-
-                var userId = Guid.Parse(senderId);
-
-                var userApplications = await spaceService.GetApplicationsByUserIdAsync(userId);
+                
+                var userApplications = await spaceService.GetApplicationsByUserIdAsync(Guid.Parse(senderId));
 
                 var userApplicationViews = new List<UserApplicationView>();
 
                 foreach (var ua in userApplications)
                 {
-                    var applicationUser = ua.User;
+                    var applicationUser = ua.User ?? await userService.GetUserByIdAsync(ua.UserId);
 
                     if (applicationUser is null)
                     {
-                        applicationUser = await userService.GetUserByIdAsync(ua.UserId);
-
-                        if (applicationUser is null)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
 
                     userApplicationViews.Add(new UserApplicationView(
