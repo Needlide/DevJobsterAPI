@@ -8,4 +8,4 @@ public record VacancyView(
     string TypeOfJob,
     string Location,
     string Country,
-    DatabaseModels.Recruiter.Recruiter Recruiter);
+    DatabaseModels.Recruiter.Recruiter? Recruiter);
