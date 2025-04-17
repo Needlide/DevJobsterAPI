@@ -19,14 +19,25 @@ public static class RecruiterEndpointExtension
         recruiterGroup.MapGet("/", async (IUserManagementService userService) =>
         {
             var recruiters = await userService.GetAllRecruitersAsync();
-            return TypedResults.Ok(recruiters);
+
+            var recruiterViews = recruiters.Select(r => new RecruiterView(
+                r.FirstName, r.LastName, r.Notes, r.Company, r.PhoneNumber));
+            
+            return TypedResults.Ok(recruiterViews);
         }).RequireAuthorization("AdminOnly");
 
         recruiterGroup.MapGet("/{recruiterId:guid}",
-                async Task<Results<Ok<Recruiter>, NotFound>> (Guid recruiterId, IUserManagementService userService) =>
-                    await userService.GetRecruiterByIdAsync(recruiterId) is { } recruiter
-                        ? TypedResults.Ok(recruiter)
-                        : TypedResults.NotFound())
+                async Task<Results<Ok<RecruiterView>, NotFound>> (Guid recruiterId, IUserManagementService userService) =>
+                {
+                    var recruiter = await userService.GetRecruiterByIdAsync(recruiterId);
+
+                    if (recruiter == null)
+                        return TypedResults.NotFound();
+                    
+                    var recruiterView = new RecruiterView(recruiter.FirstName, recruiter.LastName, recruiter.Notes, recruiter.Company, recruiter.PhoneNumber);
+                    
+                    return TypedResults.Ok(recruiterView);
+                })
             .RequireAuthorization("RecruiterAndAdminOnly");
 
         recruiterGroup.MapPost("/",
