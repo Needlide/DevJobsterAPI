@@ -18,17 +18,14 @@ public static class MessagesEndpointExtension
                 {
                     var message = await userSpaceService.GetMessageByIdAsync(messageId);
 
-                    if (message == null)
-                    {
-                        return TypedResults.NotFound();
-                    }
+                    if (message == null) return TypedResults.NotFound();
 
                     var messageView = new MessageView(
                         message.Body,
                         message.ChatId,
                         message.UserId,
                         message.RecruiterId);
-                    
+
                     return TypedResults.Ok(messageView);
                 })
             .RequireAuthorization();

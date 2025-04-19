@@ -22,20 +22,22 @@ public static class RecruiterEndpointExtension
 
             var recruiterViews = recruiters.Select(r => new RecruiterView(
                 r.FirstName, r.LastName, r.Notes, r.Company, r.PhoneNumber));
-            
+
             return TypedResults.Ok(recruiterViews);
         }).RequireAuthorization("AdminOnly");
 
         recruiterGroup.MapGet("/{recruiterId:guid}",
-                async Task<Results<Ok<RecruiterView>, NotFound>> (Guid recruiterId, IUserManagementService userService) =>
+                async Task<Results<Ok<RecruiterView>, NotFound>> (Guid recruiterId,
+                    IUserManagementService userService) =>
                 {
                     var recruiter = await userService.GetRecruiterByIdAsync(recruiterId);
 
                     if (recruiter == null)
                         return TypedResults.NotFound();
-                    
-                    var recruiterView = new RecruiterView(recruiter.FirstName, recruiter.LastName, recruiter.Notes, recruiter.Company, recruiter.PhoneNumber);
-                    
+
+                    var recruiterView = new RecruiterView(recruiter.FirstName, recruiter.LastName, recruiter.Notes,
+                        recruiter.Company, recruiter.PhoneNumber);
+
                     return TypedResults.Ok(recruiterView);
                 })
             .RequireAuthorization("RecruiterAndAdminOnly");

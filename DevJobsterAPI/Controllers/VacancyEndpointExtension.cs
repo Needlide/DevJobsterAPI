@@ -14,25 +14,30 @@ public static class VacancyEndpointExtension
         var vacancyGroup = app.MapGroup("/api/vacancies")
             .WithTags("Vacancies"); // Swagger grouping
 
-        vacancyGroup.MapGet("/", async (IUserSpaceService userSpaceService, IUserManagementService userManagementService) =>
-        {
-            var vacancies = await userSpaceService.GetAllVacanciesAsync();
+        vacancyGroup.MapGet("/",
+            async (IUserSpaceService userSpaceService, IUserManagementService userManagementService) =>
+            {
+                var vacancies = await userSpaceService.GetAllVacanciesAsync();
 
-            var vacancyViews = vacancies.Select(async v => new VacancyView(
-                v.Title, v.Description, v.Requirements, v.CompanyWebsite, v.TypeOfJob, v.Location, v.Country, v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId)));
-            
-            return TypedResults.Ok(vacancyViews);
-        }).RequireAuthorization("UserAndAdminOnly");
+                var vacancyViews = vacancies.Select(async v => new VacancyView(
+                    v.Title, v.Description, v.Requirements, v.CompanyWebsite, v.TypeOfJob, v.Location, v.Country,
+                    v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId)));
+
+                return TypedResults.Ok(vacancyViews);
+            }).RequireAuthorization("UserAndAdminOnly");
 
         vacancyGroup.MapGet("/{vacancyId:guid}",
-                async Task<Results<Ok<VacancyView>, NotFound>> (Guid vacancyId, IUserSpaceService userSpaceService, IUserManagementService userManagementService) =>
+                async Task<Results<Ok<VacancyView>, NotFound>> (Guid vacancyId, IUserSpaceService userSpaceService,
+                    IUserManagementService userManagementService) =>
                 {
                     var v = await userSpaceService.GetVacancyByIdAsync(vacancyId);
 
                     if (v is null)
                         return TypedResults.NotFound();
 
-                    var vacancyView = new VacancyView( v.Title, v.Description, v.Requirements, v.CompanyWebsite, v.TypeOfJob, v.Location, v.Country, v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId));
+                    var vacancyView = new VacancyView(v.Title, v.Description, v.Requirements, v.CompanyWebsite,
+                        v.TypeOfJob, v.Location, v.Country,
+                        v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId));
 
                     return TypedResults.Ok(vacancyView);
                 })
@@ -77,11 +82,8 @@ public static class VacancyEndpointExtension
                 {
                     var applicationUser = va.User ?? await userManagementService.GetUserByIdAsync(va.UserId);
 
-                    if (applicationUser is null)
-                    {
-                        continue;
-                    }
-                    
+                    if (applicationUser is null) continue;
+
                     vacancyApplicationViews.Add(new UserApplicationView(
                         applicationUser.FirstName,
                         applicationUser.LastName,
@@ -90,7 +92,7 @@ public static class VacancyEndpointExtension
                         applicationUser.YearsOfExperience,
                         applicationUser.EnglishLevel));
                 }
-                
+
                 return TypedResults.Ok(vacancyApplicationViews);
             }).RequireAuthorization("RecruiterOnly");
 

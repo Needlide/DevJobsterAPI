@@ -31,10 +31,10 @@ public static class AdminEndpointExtension
                 async Task<Results<Ok<AdminView>, NotFound>> (Guid adminId, IAdminService adminService) =>
                 {
                     var admin = await adminService.GetAdminByIdAsync(adminId);
-                    
+
                     if (admin is null)
                         return TypedResults.NotFound();
-                    
+
                     var adminView = new AdminView(admin.FirstName, admin.LastName, admin.Role);
 
                     return TypedResults.Ok(adminView);
@@ -47,7 +47,7 @@ public static class AdminEndpointExtension
 
             var reportViews = reports.Select(report => new ReportView(
                 report.Title, report.Body, report.ReportObjectId, report.CreatedAt));
-            
+
             return TypedResults.Ok(reportViews);
         }).RequireAuthorization("AdminOnly");
 
@@ -55,12 +55,12 @@ public static class AdminEndpointExtension
             async Task<Results<Ok<ReportView>, NotFound>> (int reportId, IAdminService adminService) =>
             {
                 var report = await adminService.GetReportByIdAsync(reportId);
-                
+
                 if (report is null)
                     return TypedResults.NotFound();
 
                 var reportView = new ReportView(report.Title, report.Body, report.ReportObjectId, report.CreatedAt);
-                
+
                 return TypedResults.Ok(reportView);
             }
         ).RequireAuthorization("AdminOnly");
@@ -70,7 +70,7 @@ public static class AdminEndpointExtension
             var logs = await adminService.GetLogsByDateRangeAsync(startDate, endDate);
 
             var logViews = logs.Select(log => new LogView(log.Body, log.Admin, log.CreatedAt));
-            
+
             return TypedResults.Ok(logViews);
         }).RequireAuthorization("AdminOnly");
 
@@ -83,7 +83,6 @@ public static class AdminEndpointExtension
                 .Select<RegisteredAccount, RegisteredAccountShortView>(acc =>
                 {
                     if (acc.User is not null)
-                    {
                         return new RegisteredAccountShortView(
                             acc.User.FirstName,
                             acc.User.LastName,
@@ -91,9 +90,7 @@ public static class AdminEndpointExtension
                             acc.User.UserId,
                             acc.CreatedAt
                         );
-                    }
                     if (acc.Recruiter is not null)
-                    {
                         return new RegisteredAccountShortView(
                             acc.Recruiter.FirstName,
                             acc.Recruiter.LastName,
@@ -101,9 +98,9 @@ public static class AdminEndpointExtension
                             acc.Recruiter.RecruiterId,
                             acc.CreatedAt
                         );
-                    }
 
-                    throw new InvalidOperationException("RegisteredAccount must have either a User or a Recruiter.");                })
+                    throw new InvalidOperationException("RegisteredAccount must have either a User or a Recruiter.");
+                })
                 .ToList();
 
             return TypedResults.Ok(accountViews);
@@ -124,7 +121,7 @@ public static class AdminEndpointExtension
                             UserType.Recruiter,
                             registeredAccount.Recruiter.RecruiterId,
                             registeredAccount.CreatedAt);
-                    
+
                         return TypedResults.Ok(registeredAccountShortView);
                     }
                     case { User: not null }:
@@ -135,7 +132,7 @@ public static class AdminEndpointExtension
                             UserType.User,
                             registeredAccount.User.UserId,
                             registeredAccount.CreatedAt);
-                    
+
                         return TypedResults.Ok(registeredAccountShortView);
                     }
                     default:

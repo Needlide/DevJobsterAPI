@@ -25,7 +25,7 @@ public class Application
     public Guid UserId { get; init; }
     public Guid VacancyId { get; init; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
-    
+
     public User.User? User { get; init; }
     public Vacancy? Vacancy { get; init; }
 }

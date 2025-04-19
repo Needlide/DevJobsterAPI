@@ -20,9 +20,10 @@ public static class UserEndpointExtension
         userGroup.MapGet("/", async (IUserManagementService service) =>
         {
             var users = await service.GetAllUsersAsync();
-            
-            var userViews = users.Select(u => new UserProfileView(u.FirstName, u.LastName, u.Role, u.Skills, u.Location, u.YearsOfExperience, u.EnglishLevel));
-            
+
+            var userViews = users.Select(u => new UserProfileView(u.FirstName, u.LastName, u.Role, u.Skills, u.Location,
+                u.YearsOfExperience, u.EnglishLevel));
+
             return TypedResults.Ok(userViews);
         }).RequireAuthorization("AdminOnly");
 
@@ -30,11 +31,12 @@ public static class UserEndpointExtension
                 async Task<Results<Ok<UserProfileView>, NotFound>> (Guid userId, IUserManagementService userService) =>
                 {
                     var user = await userService.GetUserByIdAsync(userId);
-                    
+
                     if (user == null)
                         return TypedResults.NotFound();
 
-                    var userView = new UserProfileView(user.FirstName, user.LastName, user.Role, user.Skills, user.Location, user.YearsOfExperience, user.EnglishLevel);
+                    var userView = new UserProfileView(user.FirstName, user.LastName, user.Role, user.Skills,
+                        user.Location, user.YearsOfExperience, user.EnglishLevel);
                     return TypedResults.Ok(userView);
                 })
             .RequireAuthorization();
@@ -88,7 +90,7 @@ public static class UserEndpointExtension
 
                 if (senderId is null)
                     return TypedResults.BadRequest();
-                
+
                 var userApplications = await spaceService.GetApplicationsByUserIdAsync(Guid.Parse(senderId));
 
                 var userApplicationViews = new List<UserApplicationView>();
@@ -97,10 +99,7 @@ public static class UserEndpointExtension
                 {
                     var applicationUser = ua.User ?? await userService.GetUserByIdAsync(ua.UserId);
 
-                    if (applicationUser is null)
-                    {
-                        continue;
-                    }
+                    if (applicationUser is null) continue;
 
                     userApplicationViews.Add(new UserApplicationView(
                         applicationUser.FirstName,
