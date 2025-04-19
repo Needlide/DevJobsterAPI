@@ -7,7 +7,7 @@ namespace DevJobsterAPI.Database;
 public class DbContext : IDbContext
 {
     private readonly Lazy<NpgsqlConnection> _connectionLazy;
-    private bool _disposed = false;
+    private bool _disposed;
 
     public DbContext(string? connectionString)
     {
@@ -20,7 +20,6 @@ public class DbContext : IDbContext
     }
 
     public IDbConnection Connection => _connectionLazy.Value;
-
 
     public void Dispose()
     {
