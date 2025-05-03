@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DevJobsterAPI.Common;
 using DevJobsterAPI.Database.Abstract;
 using DevJobsterAPI.DatabaseModels.RequestModels.User;
@@ -96,6 +97,39 @@ public static class VacancyEndpointExtension
                 return TypedResults.Ok(vacancyApplicationViews);
             }).RequireAuthorization("RecruiterOnly");
 
+        vacancyGroup.MapGet("/applications",
+            async Task<Results<Ok<IEnumerable<VacancyView>>, UnauthorizedHttpResult>> (
+                ClaimsPrincipal user,
+                IUserSpaceService userSpaceService,
+                IUserManagementService userManagementService) =>
+            {
+                var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+                    return TypedResults.Unauthorized();
+
+                var vacancies = await userSpaceService.GetVacanciesByUserIdAsync(userId);
+
+                var vacancyViews = new List<VacancyView>();
+
+                foreach (var v in vacancies)
+                {
+                    var recruiter = v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId);
+
+                    vacancyViews.Add(new VacancyView(
+                        v.Title,
+                        v.Description,
+                        v.Requirements,
+                        v.CompanyWebsite,
+                        v.TypeOfJob,
+                        v.Location,
+                        v.Country,
+                        recruiter));
+                }
+
+                return TypedResults.Ok(vacancyViews.AsEnumerable());
+            }).RequireAuthorization("UserOnly");
+        
         return app;
     }
 }

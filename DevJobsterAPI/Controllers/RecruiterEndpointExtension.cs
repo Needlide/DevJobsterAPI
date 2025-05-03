@@ -26,10 +26,17 @@ public static class RecruiterEndpointExtension
             return TypedResults.Ok(recruiterViews);
         }).RequireAuthorization("AdminOnly");
 
-        recruiterGroup.MapGet("/{recruiterId:guid}",
-                async Task<Results<Ok<RecruiterView>, NotFound>> (Guid recruiterId,
+        recruiterGroup.MapGet("/me",
+                async Task<Results<Ok<RecruiterView>, NotFound, BadRequest>> (ClaimsPrincipal user,
                     IUserManagementService userService) =>
                 {
+                    var senderId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    
+                    if (senderId is null)
+                        return TypedResults.BadRequest();
+
+                    var recruiterId = Guid.Parse(senderId);
+                    
                     var recruiter = await userService.GetRecruiterByIdAsync(recruiterId);
 
                     if (recruiter == null)
@@ -60,7 +67,7 @@ public static class RecruiterEndpointExtension
                 })
             .WithValidation<RecruiterRegistration>();
 
-        recruiterGroup.MapPut("/{recruiterId:guid}",
+        recruiterGroup.MapPut("/me",
                 async Task<Results<NoContent, NotFound, BadRequest>> (
                     RecruiterUpdate recruiter,
                     ClaimsPrincipal user,
@@ -88,12 +95,21 @@ public static class RecruiterEndpointExtension
             .WithValidation<UserAuthentication>()
             .RequireAuthorization("RecruiterOnly");
 
-        recruiterGroup.MapDelete("/{recruiterId:guid}",
-                async Task<Results<NoContent, NotFound>> (Guid recruiterId, IUserManagementService userService) =>
-                    await userService.DeleteRecruiterAsync(recruiterId) > 0
+        recruiterGroup.MapDelete("/me",
+                async Task<Results<NoContent, NotFound, BadRequest>> (
+                    ClaimsPrincipal user,
+                    IUserManagementService userService) =>
+                {
+                    var recruiterIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    if (recruiterIdStr is null || !Guid.TryParse(recruiterIdStr, out var recruiterId))
+                        return TypedResults.BadRequest();
+
+                    return await userService.DeleteRecruiterAsync(recruiterId) > 0
                         ? TypedResults.NoContent()
-                        : TypedResults.NotFound())
-            .RequireAuthorization("RecruiterAndAdminOnly");
+                        : TypedResults.NotFound();
+                })
+            .RequireAuthorization("RecruiterOnly");
 
         return app;
     }

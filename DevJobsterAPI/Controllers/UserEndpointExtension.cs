@@ -27,9 +27,16 @@ public static class UserEndpointExtension
             return TypedResults.Ok(userViews);
         }).RequireAuthorization("AdminOnly");
 
-        userGroup.MapGet("/{userId}",
-                async Task<Results<Ok<UserProfileView>, NotFound>> (Guid userId, IUserManagementService userService) =>
+        userGroup.MapGet("/me",
+                async Task<Results<Ok<UserProfileView>, NotFound, BadRequest>> (ClaimsPrincipal claimsPrincipal, IUserManagementService userService) =>
                 {
+                    var senderId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    
+                    if (senderId is null)
+                        return TypedResults.BadRequest();
+
+                    var userId = Guid.Parse(senderId);
+                    
                     var user = await userService.GetUserByIdAsync(userId);
 
                     if (user == null)
@@ -57,19 +64,38 @@ public static class UserEndpointExtension
                     : TypedResults.BadRequest();
             }).WithValidation<UserRegistration>();
 
-        userGroup.MapPut("/{userId:guid}",
-                async Task<Results<NoContent, NotFound>> (Guid userId, UserUpdate user,
-                    IUserManagementService userService) => await userService.UpdateUserAsync(userId, user) > 0
-                    ? TypedResults.NoContent()
-                    : TypedResults.NotFound())
+        userGroup.MapPut("/me",
+                async Task<Results<NoContent, NotFound, BadRequest>> (ClaimsPrincipal claimsPrincipal, UserUpdate user,
+                    IUserManagementService userService) =>
+                {
+                    var senderId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    
+                    if (senderId is null)
+                        return TypedResults.BadRequest();
+
+                    var userId = Guid.Parse(senderId);
+                    
+                    return await userService.UpdateUserAsync(userId, user) > 0
+                        ? TypedResults.NoContent()
+                        : TypedResults.NotFound();
+                })
             .WithValidation<UserUpdate>()
             .RequireAuthorization("UserOnly");
 
-        userGroup.MapDelete("/{userId:guid}",
-                async Task<Results<NoContent, NotFound>> (Guid userId, IUserManagementService userService) =>
-                    await userService.DeleteUserAsync(userId) > 0
+        userGroup.MapDelete("/me",
+                async Task<Results<NoContent, NotFound, BadRequest>> (ClaimsPrincipal claimsPrincipal, IUserManagementService userService) =>
+                {
+                    var senderId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    
+                    if (senderId is null)
+                        return TypedResults.BadRequest();
+
+                    var userId = Guid.Parse(senderId);
+                    
+                    return await userService.DeleteUserAsync(userId) > 0
                         ? TypedResults.NoContent()
-                        : TypedResults.NotFound())
+                        : TypedResults.NotFound();
+                })
             .RequireAuthorization("UserAndAdminOnly");
 
         userGroup.MapPost("/reset-password",
@@ -80,7 +106,7 @@ public static class UserEndpointExtension
             .WithValidation<UserAuthentication>()
             .RequireAuthorization("UserOnly");
 
-        userGroup.MapGet("/{userId:guid}/applications",
+        userGroup.MapGet("/my-applications",
             async Task<Results<Ok<List<UserApplicationView>>, BadRequest>> (
                 ClaimsPrincipal user,
                 IUserSpaceService spaceService,
@@ -113,7 +139,7 @@ public static class UserEndpointExtension
                 return TypedResults.Ok(userApplicationViews);
             }).RequireAuthorization("UserOnly");
 
-        userGroup.MapGet("/{userId:guid}/chats",
+        userGroup.MapGet("/my-chats",
                 async Task<Results<Ok<IEnumerable<Chat>>, BadRequest>> (ClaimsPrincipal user,
                     IUserSpaceService spaceService) =>
                 {
