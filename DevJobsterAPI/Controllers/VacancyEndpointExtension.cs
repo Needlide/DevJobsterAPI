@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using DevJobsterAPI.Common;
 using DevJobsterAPI.Database.Abstract;
+using DevJobsterAPI.DatabaseModels.Recruiter;
+using DevJobsterAPI.DatabaseModels.RequestModels.Recruiter;
 using DevJobsterAPI.DatabaseModels.RequestModels.User;
 using DevJobsterAPI.DatabaseModels.RequestModels.Vacancy;
 using DevJobsterAPI.DatabaseModels.Vacancy;
@@ -20,9 +22,27 @@ public static class VacancyEndpointExtension
             {
                 var vacancies = await userSpaceService.GetAllVacanciesAsync();
 
-                var vacancyViews = vacancies.Select(async v => new VacancyView(
-                    v.Title, v.Description, v.Requirements, v.CompanyWebsite, v.TypeOfJob, v.Location, v.Country,
-                    v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId)));
+                var vacancyViews = vacancies.Select(async v => 
+                {
+                    var recruiter = v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId);
+                    
+                    var recruiterView = recruiter != null ? new RecruiterView(
+                        recruiter.FirstName,
+                        recruiter.LastName,
+                        recruiter.Email,
+                        recruiter.Company,
+                        recruiter.PhoneNumber) : null;
+    
+                    return new VacancyView(
+                        v.Title, 
+                        v.Description, 
+                        v.Requirements, 
+                        v.CompanyWebsite, 
+                        v.TypeOfJob, 
+                        v.Location, 
+                        v.Country,
+                        recruiterView);
+                });
 
                 return TypedResults.Ok(vacancyViews);
             }).RequireAuthorization("UserAndAdminOnly");
@@ -36,9 +56,23 @@ public static class VacancyEndpointExtension
                     if (v is null)
                         return TypedResults.NotFound();
 
-                    var vacancyView = new VacancyView(v.Title, v.Description, v.Requirements, v.CompanyWebsite,
-                        v.TypeOfJob, v.Location, v.Country,
-                        v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId));
+                    var recruiter = v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId);
+                    var recruiterView = recruiter != null ? new RecruiterView(
+                        recruiter.FirstName,
+                        recruiter.LastName,
+                        recruiter.Email,
+                        recruiter.Company,
+                        recruiter.PhoneNumber) : null;
+
+                    var vacancyView = new VacancyView(
+                        v.Title, 
+                        v.Description, 
+                        v.Requirements, 
+                        v.CompanyWebsite,
+                        v.TypeOfJob, 
+                        v.Location, 
+                        v.Country,
+                        recruiterView);
 
                     return TypedResults.Ok(vacancyView);
                 })
@@ -116,6 +150,13 @@ public static class VacancyEndpointExtension
                 {
                     var recruiter = v.Recruiter ?? await userManagementService.GetRecruiterByIdAsync(v.RecruiterId);
 
+                    var recruiterView = recruiter != null ? new RecruiterView(
+                        recruiter.FirstName,
+                        recruiter.LastName,
+                        recruiter.Email,
+                        recruiter.Company,
+                        recruiter.PhoneNumber) : null;
+                    
                     vacancyViews.Add(new VacancyView(
                         v.Title,
                         v.Description,
@@ -124,7 +165,7 @@ public static class VacancyEndpointExtension
                         v.TypeOfJob,
                         v.Location,
                         v.Country,
-                        recruiter));
+                        recruiterView));
                 }
 
                 return TypedResults.Ok(vacancyViews.AsEnumerable());

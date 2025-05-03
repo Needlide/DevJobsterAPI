@@ -68,8 +68,14 @@ public static class AdminEndpointExtension
         adminGroup.MapGet("/logs", async (DateTime startDate, DateTime endDate, IAdminService adminService) =>
         {
             var logs = await adminService.GetLogsByDateRangeAsync(startDate, endDate);
-
-            var logViews = logs.Select(log => new LogView(log.Body, log.Admin, log.CreatedAt));
+            
+            var logViews = logs.Select(log =>
+            {
+                if (log.Admin != null)
+                    return new LogView(log.Body,
+                        new AdminView(log.Admin.FirstName, log.Admin.LastName, log.Admin.Role), log.CreatedAt);
+                return new LogView(log.Body, null, log.CreatedAt);
+            });
 
             return TypedResults.Ok(logViews);
         }).RequireAuthorization("AdminOnly");
