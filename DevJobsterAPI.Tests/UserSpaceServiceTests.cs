@@ -1552,4 +1552,84 @@ public class UserSpaceServiceTests : IAsyncLifetime
         Assert.Equal(message.MessageId, retrievedMessage.MessageId);
         Assert.Equal(message.Body, retrievedMessage.Body);
     }
+    
+    [Fact]
+    public async Task GetVacanciesByUserId_ExistingId_ReturnsVacancies()
+    {
+        // Arrange
+        var userManagementService = new UserManagementService(_dbContext);
+
+        Recruiter recruiter = new
+        (
+            "FirstName",
+            "LastName",
+            "example6@example.com",
+            "company",
+            "123433255"
+        );
+
+        RecruiterRegistration recruiterRegistration = new
+        (recruiter,
+            new UserAuthentication
+            (
+                recruiter.RecruiterId,
+                "iuhgsdugsdvbsd;visdbvdsbvhhsdbvsb"
+            )
+        );
+
+        await userManagementService.CreateRecruiterAsync(recruiterRegistration);
+
+        Vacancy expectedVacancy = new
+        (
+            "Title",
+            "Description",
+            123,
+            "Requirements",
+            "https://example.com",
+            "1",
+            "1",
+            "Country",
+            recruiter.RecruiterId);
+
+        AddVacancy addVacancy = new(expectedVacancy);
+
+        var service = new UserSpaceService(_dbContext);
+
+        await service.CreateVacancyAsync(addVacancy);
+
+        User user = new
+        (
+            "sdgsd",
+            "sdgdsg",
+            "example7@example.com",
+            "sdgsdg",
+            "45",
+            "sdghf",
+            "1"
+        );
+
+        UserAuthentication userAuthentication = new(user.UserId, "sgsdgsdgsdg");
+
+        UserRegistration userRegistration = new(user, userAuthentication);
+
+        await userManagementService.CreateUserAsync(userRegistration);
+
+        AddApplication application = new(expectedVacancy.VacancyId);
+        await service.CreateApplicationAsync(user.UserId, application);
+
+        // Act
+        var vacancies = await service.GetVacanciesByUserIdAsync(user.UserId);
+
+        // Assert
+        Assert.NotNull(vacancies);
+
+        await using var verifyConnection = new NpgsqlConnection(_connectionString);
+        var retrievedVacancies = await verifyConnection.QueryAsync<Vacancy>(
+            "SELECT v.*\nFROM vacancies v\nJOIN applications a ON v.vacancy_id = a.vacancy_id\nWHERE a.user_id = @UserId;",
+            new { user.UserId }
+        );
+
+        Assert.NotNull(retrievedVacancies);
+        
+    }
 }

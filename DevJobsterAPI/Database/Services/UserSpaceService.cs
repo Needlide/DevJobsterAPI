@@ -140,6 +140,24 @@ public class UserSpaceService(IDbContext dbContext) : IUserSpaceService
         }
     }
 
+    public async Task<IEnumerable<Vacancy>> GetVacanciesByUserIdAsync(Guid userId)
+    {
+        try
+        {
+            const string sql = """
+                               SELECT v.*
+                               FROM vacancies v
+                               JOIN applications a ON v.vacancy_id = a.vacancy_id
+                               WHERE a.user_id = @UserId;
+                               """;
+            return await dbContext.Connection.QueryAsync<Vacancy>(sql, new { userId });
+        }
+        catch (PostgresException e)
+        {
+            throw DatabaseExceptionHandler.CatchDatabaseException(e);
+        }
+    }
+
     public async Task<IEnumerable<Chat>> GetChatsForUserAsync(Guid userId)
     {
         try

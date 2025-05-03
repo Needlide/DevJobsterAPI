@@ -17,6 +17,7 @@ public interface IUserSpaceService
     Task<int> CreateApplicationAsync(Guid userId, AddApplication addApplication);
     Task<IEnumerable<Application>> GetApplicationsByUserIdAsync(Guid userId);
     Task<IEnumerable<Application>> GetApplicationsByVacancyIdAsync(Guid vacancyId);
+    Task<IEnumerable<Vacancy>> GetVacanciesByUserIdAsync(Guid userId);
 
     Task<IEnumerable<Chat>> GetChatsForUserAsync(Guid userId);
     Task<Chat?> GetChatByIdAsync(Guid chatId);
