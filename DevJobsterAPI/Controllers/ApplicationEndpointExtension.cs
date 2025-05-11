@@ -30,7 +30,7 @@ public static class ApplicationEndpointExtension
                         : TypedResults.BadRequest();
                 })
             .WithValidation<Application>()
-            .RequireAuthorization("UsersOnly");
+            .RequireAuthorization("UserOnly");
 
         return app;
     }
