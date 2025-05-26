@@ -4,7 +4,7 @@ using Npgsql;
 
 namespace DevJobsterAPI.Database;
 
-public class DbContext : IDbContext
+public sealed class DbContext : IDbContext
 {
     private readonly Lazy<NpgsqlConnection> _connectionLazy;
     private bool _disposed;
@@ -27,7 +27,7 @@ public class DbContext : IDbContext
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (_disposed) return;
 
