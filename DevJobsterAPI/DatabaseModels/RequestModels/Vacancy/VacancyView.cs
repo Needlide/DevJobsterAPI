@@ -1,6 +1,7 @@
 namespace DevJobsterAPI.DatabaseModels.RequestModels.Vacancy;
 
 public record VacancyView(
+    Guid VacancyId,
     string Title,
     string Description,
     string Requirements,

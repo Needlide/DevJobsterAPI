@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:5068/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MjgxZDkwMi1jOTc2LTRlZjAtODI2MS1hMjM5NDJjNDE0NjQiLCJqdGkiOiJhMGZlYzVlYi05NGEwLTQ0YWQtYWNhMi0wNWYyNzE4ODFlYzUiLCJpYXQiOjE3NDQ0Nzg5NzQsInJvbGUiOiJVc2VyIiwibmJmIjoxNzQ0NDc4OTc0LCJleHAiOjE3NDUwODM3NzQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA2OC9hcGkiLCJhdWQiOiJ5b3VyLWNsaWVudC1hcHAifQ.vcL6icxHvgkKYAqEZZkrCPGL-LkvBQ7vDRdSUpSuJKM
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MjgxZDkwMi1jOTc2LTRlZjAtODI2MS1hMjM5NDJjNDE0NjQiLCJqdGkiOiIwOGE2Zjk0Yy1jMDE3LTRiNTAtOWFjOS02MGRkNDU0ZDdhZDMiLCJpYXQiOjE3NDY5NzQ2NTIsInJvbGUiOiJVc2VyIiwibmFtZWlkIjoiNTI4MWQ5MDItYzk3Ni00ZWYwLTgyNjEtYTIzOTQyYzQxNDY0IiwibmJmIjoxNzQ2OTc0NjUyLCJleHAiOjE3NDc1Nzk0NTIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA2OC9hcGkiLCJhdWQiOiJ5b3VyLWNsaWVudC1hcHAifQ.msQlkcuNjSWtgerVGa3wr2duZtlmMCrKUMDXI2sshb0
 
 ### Register new user
 # @name register
@@ -7,7 +7,7 @@ POST {{baseUrl}}/users
 Content-Type: application/json
 
 {
-  "email": "user12@example.com",
+  "email": "user1244@example.com",
   "password": "YourPassword123"
 }
 
@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### Update user
-PUT {{baseUrl}}/users/5281d902-c976-4ef0-8261-a23942c41464
+PUT {{baseUrl}}/users/me
 Authorization: Bearer {{token}}
 Accept: application/json
 Content-Type: application/json
@@ -44,17 +44,16 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "userId": "5281d902-c976-4ef0-8261-a23942c41464",
   "password": "YourPassword123updated"
 }
 
 ### Get user's applications
-GET {{baseUrl}}/users/5281d902-c976-4ef0-8261-a23942c41464/applications
+GET {{baseUrl}}/users/applications
 Authorization: Bearer {{token}}
 Accept: application/json
 
 ### Get user's chats
-GET {{baseUrl}}/users/5281d902-c976-4ef0-8261-a23942c41464/chats
+GET {{baseUrl}}/users/chats
 Authorization: Bearer {{token}}
 Accept: application/json
 
@@ -65,6 +64,5 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "userId": "5281d902-c976-4ef0-8261-a23942c41464",
-  "vacancyId": ""
+  "vacancyId": "cf8ccfe9-38e5-4583-9c24-c756eb85f40e"
 }

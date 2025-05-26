@@ -1,3 +1,4 @@
+using DevJobsterAPI.ApiModels;
 using DevJobsterAPI.Common;
 using DevJobsterAPI.Database.Abstract;
 using DevJobsterAPI.DatabaseModels.RequestModels.Admin;
@@ -24,22 +25,23 @@ public static class AdminEndpointExtension
                 admin.Role
             ));
 
-            return TypedResults.Ok(adminViews);
+            return TypedResults.Ok(ApiResponseFactory.Success(adminViews));
         }).RequireAuthorization("AdminOnly");
 
         adminGroup.MapGet("/admins/{adminId:guid}",
-                async Task<Results<Ok<AdminView>, NotFound>> (Guid adminId, IAdminService adminService) =>
-                {
-                    var admin = await adminService.GetAdminByIdAsync(adminId);
+            async Task<Results<Ok<ApiResponse<AdminView>>, NotFound<ApiResponse<AdminView>>>> (Guid adminId,
+                IAdminService adminService) =>
+            {
+                var admin = await adminService.GetAdminByIdAsync(adminId);
 
-                    if (admin is null)
-                        return TypedResults.NotFound();
+                if (admin is null)
+                    return TypedResults.NotFound(ApiResponseFactory.Fail<AdminView>(
+                        "Admin not found", "NOT_FOUND"));
 
-                    var adminView = new AdminView(admin.FirstName, admin.LastName, admin.Role);
+                var adminView = new AdminView(admin.FirstName, admin.LastName, admin.Role);
 
-                    return TypedResults.Ok(adminView);
-                })
-            .RequireAuthorization("AdminOnly");
+                return TypedResults.Ok(ApiResponseFactory.Success(adminView));
+            }).RequireAuthorization("AdminOnly");
 
         adminGroup.MapGet("/reports", async (IAdminService adminService) =>
         {
@@ -48,27 +50,28 @@ public static class AdminEndpointExtension
             var reportViews = reports.Select(report => new ReportView(
                 report.Title, report.Body, report.ReportObjectId, report.CreatedAt));
 
-            return TypedResults.Ok(reportViews);
+            return TypedResults.Ok(ApiResponseFactory.Success(reportViews));
         }).RequireAuthorization("AdminOnly");
 
         adminGroup.MapGet("/reports/{reportId:int}",
-            async Task<Results<Ok<ReportView>, NotFound>> (int reportId, IAdminService adminService) =>
+            async Task<Results<Ok<ApiResponse<ReportView>>, NotFound<ApiResponse<ReportView>>>> (int reportId,
+                IAdminService adminService) =>
             {
                 var report = await adminService.GetReportByIdAsync(reportId);
 
                 if (report is null)
-                    return TypedResults.NotFound();
+                    return TypedResults.NotFound(ApiResponseFactory.Fail<ReportView>(
+                        "Report not found", "NOT_FOUND"));
 
                 var reportView = new ReportView(report.Title, report.Body, report.ReportObjectId, report.CreatedAt);
 
-                return TypedResults.Ok(reportView);
-            }
-        ).RequireAuthorization("AdminOnly");
+                return TypedResults.Ok(ApiResponseFactory.Success(reportView));
+            }).RequireAuthorization("AdminOnly");
 
         adminGroup.MapGet("/logs", async (DateTime startDate, DateTime endDate, IAdminService adminService) =>
         {
             var logs = await adminService.GetLogsByDateRangeAsync(startDate, endDate);
-            
+
             var logViews = logs.Select(log =>
             {
                 if (log.Admin != null)
@@ -77,7 +80,7 @@ public static class AdminEndpointExtension
                 return new LogView(log.Body, null, log.CreatedAt);
             });
 
-            return TypedResults.Ok(logViews);
+            return TypedResults.Ok(ApiResponseFactory.Success(logViews));
         }).RequireAuthorization("AdminOnly");
 
         adminGroup.MapGet("/accounts", async (IAdminService adminService) =>
@@ -109,50 +112,53 @@ public static class AdminEndpointExtension
                 })
                 .ToList();
 
-            return TypedResults.Ok(accountViews);
+            return TypedResults.Ok(ApiResponseFactory.Success(accountViews));
         }).RequireAuthorization("AdminOnly");
 
         adminGroup.MapGet("/accounts/{accountId:int}",
-            async Task<Results<Ok<RegisteredAccountShortView>, NotFound>> (int accountId, IAdminService adminService) =>
+            async Task<Results<Ok<ApiResponse<RegisteredAccountShortView>>,
+                NotFound<ApiResponse<RegisteredAccountShortView>>>> (int accountId, IAdminService adminService) =>
             {
                 var registeredAccount = await adminService.GetRegisteredAccountByIdAsync(accountId);
 
-                switch (registeredAccount)
-                {
-                    case { Recruiter: not null }:
-                    {
-                        var registeredAccountShortView = new RegisteredAccountShortView(
-                            registeredAccount.Recruiter.FirstName,
-                            registeredAccount.Recruiter.LastName,
-                            UserType.Recruiter,
-                            registeredAccount.Recruiter.RecruiterId,
-                            registeredAccount.CreatedAt);
+                if (registeredAccount == null ||
+                    (registeredAccount.Recruiter == null && registeredAccount.User == null))
+                    return TypedResults.NotFound(ApiResponseFactory.Fail<RegisteredAccountShortView>(
+                        "Account not found", "NOT_FOUND"));
 
-                        return TypedResults.Ok(registeredAccountShortView);
-                    }
-                    case { User: not null }:
-                    {
-                        var registeredAccountShortView = new RegisteredAccountShortView(
-                            registeredAccount.User.FirstName,
-                            registeredAccount.User.LastName,
-                            UserType.User,
-                            registeredAccount.User.UserId,
-                            registeredAccount.CreatedAt);
+                RegisteredAccountShortView registeredAccountShortView;
 
-                        return TypedResults.Ok(registeredAccountShortView);
-                    }
-                    default:
-                        return TypedResults.NotFound();
-                }
+                if (registeredAccount.Recruiter != null)
+                    registeredAccountShortView = new RegisteredAccountShortView(
+                        registeredAccount.Recruiter.FirstName,
+                        registeredAccount.Recruiter.LastName,
+                        UserType.Recruiter,
+                        registeredAccount.Recruiter.RecruiterId,
+                        registeredAccount.CreatedAt);
+                else // User is not null based on the check above
+                    registeredAccountShortView = new RegisteredAccountShortView(
+                        registeredAccount.User!.FirstName,
+                        registeredAccount.User!.LastName,
+                        UserType.User,
+                        registeredAccount.User!.UserId,
+                        registeredAccount.CreatedAt);
+
+                return TypedResults.Ok(ApiResponseFactory.Success(registeredAccountShortView));
             }).RequireAuthorization("AdminOnly");
 
         adminGroup.MapPut("/accounts/status",
-                async Task<Results<NoContent, NotFound>> (RegisteredAccountUpdatedStatus status,
-                        IAdminService adminService) =>
-                    await adminService.UpdateRegisteredAccountStatusAsync(status) > 0
-                        ? TypedResults.NoContent()
-                        : TypedResults.NotFound())
-            .RequireAuthorization("AdminOnly");
+            async Task<Results<Ok<ApiResponse<object>>, NotFound<ApiResponse<object>>>> (
+                RegisteredAccountUpdatedStatus status, IAdminService adminService) =>
+            {
+                var result = await adminService.UpdateRegisteredAccountStatusAsync(status);
+
+                if (result > 0)
+                    return TypedResults.Ok(
+                        ApiResponseFactory.Success<object>(null, "Account status updated successfully"));
+
+                return TypedResults.NotFound(ApiResponseFactory.Fail<object>(
+                    "Account not found or status update failed", "NOT_FOUND"));
+            }).RequireAuthorization("AdminOnly");
 
         return app;
     }

@@ -38,7 +38,7 @@ public class UserSpaceService(IDbContext dbContext) : IUserSpaceService
         }
     }
 
-    public async Task<int> CreateVacancyAsync(AddVacancy vacancy)
+    public async Task<int> CreateVacancyAsync(AddVacancy vacancy, Guid recruiterId)
     {
         try
         {
@@ -53,7 +53,21 @@ public class UserSpaceService(IDbContext dbContext) : IUserSpaceService
                                 @TypeOfJob, @Location, @Country,
                                 @Benefits, @RecruiterId, @CreatedAt)
                                """;
-            return await dbContext.Connection.ExecuteAsync(sql, vacancy);
+            return await dbContext.Connection.ExecuteAsync(sql, new
+            {
+                vacancy.VacancyId,
+                vacancy.Title,
+                vacancy.Description,
+                vacancy.Salary,
+                vacancy.Requirements,
+                vacancy.CompanyWebsite,
+                vacancy.TypeOfJob,
+                vacancy.Location,
+                vacancy.Country,
+                vacancy.Benefits,
+                RecruiterId = recruiterId,
+                vacancy.CreatedAt
+            });
         }
         catch (PostgresException e)
         {
@@ -158,6 +172,22 @@ public class UserSpaceService(IDbContext dbContext) : IUserSpaceService
         }
     }
 
+    public async Task<IEnumerable<Vacancy>> GetVacanciesByRecruiterIdAsync(Guid recruiterId)
+    {
+        try
+        {
+            const string sql = """
+                               SELECT * FROM vacancies
+                               WHERE recruiter_id = @RecruiterId;
+                               """;
+            return await dbContext.Connection.QueryAsync<Vacancy>(sql, new { recruiterId });
+        }
+        catch (PostgresException e)
+        {
+            throw DatabaseExceptionHandler.CatchDatabaseException(e);
+        }
+    }
+    
     public async Task<IEnumerable<Chat>> GetChatsForUserAsync(Guid userId)
     {
         try

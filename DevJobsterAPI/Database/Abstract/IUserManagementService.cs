@@ -17,11 +17,12 @@ public interface IUserManagementService
     Task<int> DeleteUserAsync(Guid userId);
 
     Task<IEnumerable<Recruiter>> GetAllRecruitersAsync();
+    Task<List<Recruiter>> GetRecruitersByIdsAsync(IEnumerable<Guid> recruiterIds);
     Task<Recruiter?> GetRecruiterByIdAsync(Guid recruiterId);
     Task<int> CreateRecruiterAsync(RecruiterRegistration recruiterRegistration);
     Task<int> UpdateRecruiterAsync(Guid recruiterId, RecruiterUpdate recruiter);
     Task<int> DeleteRecruiterAsync(Guid recruiterId);
 
-    Task<int> ResetPasswordAsync(UserAuthentication userAuthentication);
+    Task<int> ResetPasswordAsync(Guid userId, UserAuthentication userAuthentication);
     Task<ValidateUserResult> ValidateUserAsync(LoginRegisterModel loginRegisterModel);
 }

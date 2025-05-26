@@ -9,9 +9,6 @@ public class UpdateVacancyValidator : AbstractValidator<UpdateVacancy>
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required")
             .Length(30, 700).WithMessage("Description must be between 30 and 700 characters");
-        RuleFor(x => x.Salary)
-            .NotEmpty().WithMessage("Salary is required")
-            .GreaterThan(0).WithMessage("Salary must be greater than 0");
         RuleFor(x => x.Requirements)
             .NotEmpty().WithMessage("Requirements cannot be empty")
             .Length(30, 250).WithMessage("Requirements must be between 30 and 250 characters");
@@ -21,10 +18,10 @@ public class UpdateVacancyValidator : AbstractValidator<UpdateVacancy>
             .Must(BeAValidUrl).WithMessage("Company's website link must be a valid URL");
         RuleFor(x => x.TypeOfJob)
             .NotEmpty()
-            .Length(1);
+            .MaximumLength(50);
         RuleFor(x => x.Location)
             .NotEmpty()
-            .Length(1);
+            .MaximumLength(50);
         RuleFor(x => x.Benefits)
             .Length(15, 250).WithMessage("Benefits must be between 15 and 250 characters");
     }

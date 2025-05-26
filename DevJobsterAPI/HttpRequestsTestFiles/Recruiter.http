@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:5068/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZGMxOTkzMy1jNDk2LTRmOWMtOGEzYy1lNjNjNWJkMWM5ZGQiLCJqdGkiOiI2YzM1OTI3OC1kODNmLTQ2NGItYjNiYS01MDhiYzIyNzc1ZDYiLCJpYXQiOjE3NDQ2NDk1MjIsInJvbGUiOiJSZWNydWl0ZXIiLCJuYW1laWQiOiIzZGMxOTkzMy1jNDk2LTRmOWMtOGEzYy1lNjNjNWJkMWM5ZGQiLCJuYmYiOjE3NDQ2NDk1MjIsImV4cCI6MTc0NTI1NDMyMiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDY4L2FwaSIsImF1ZCI6InlvdXItY2xpZW50LWFwcCJ9.m96KtQ9wZy-ZSKwE-Jr2s85Y6iDAV44240r57W69hz8
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiN2I2ZWE0Yi04MWNkLTRhZTktYjRjNi1jMDI4MTFiODU3MzgiLCJqdGkiOiIyNzBjYzk5NC0wOGQ4LTRiZjgtYThkOS0zZTc0OGVkZDU0NDEiLCJpYXQiOjE3NDY5OTY4MDIsInJvbGUiOiJSZWNydWl0ZXIiLCJuYW1laWQiOiJiN2I2ZWE0Yi04MWNkLTRhZTktYjRjNi1jMDI4MTFiODU3MzgiLCJuYmYiOjE3NDY5OTY4MDIsImV4cCI6MTc0NzYwMTYwMiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDY4L2FwaSIsImF1ZCI6InlvdXItY2xpZW50LWFwcCJ9.dVwPsk3k75SlmlzY-qNI7g7EWeOA009o8400o4742Fk
 
 ### Register new recruiter
 POST {{baseUrl}}/recruiters
 Content-Type: application/json
 
 {
-  "email": "recruiter12@example.com",
+  "email": "recruiter12335@example.com",
   "password": "RecruiterPass"
 }
 
@@ -15,8 +15,8 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "recruiter12@example.com",
-  "password": "newpass"
+  "email": "recruiter12335@example.com",
+  "password": "RecruiterPass"
 }
 
 ### Update recruiter
@@ -40,7 +40,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "userId": "3dc19933-c496-4f9c-8a3c-e63c5bd1c9dd",
+  "userId": "b7b6ea4b-81cd-4ae9-b4c6-c02811b85738",
   "password": "newpass"
 }
 
@@ -64,5 +64,11 @@ Content-Type: application/json
   "TypeOfJob": "2",
   "Location": "1",
   "Country": "Latina",
-  "RecruiterId": "3dc19933-c496-4f9c-8a3c-e63c5bd1c9dd"
+  "RecruiterId": "b7b6ea4b-81cd-4ae9-b4c6-c02811b85738"
 }
+
+### Get recruiter vacancies
+GET {{baseUrl}}/recruiters/vacancies
+Authorization: Bearer {{token}}
+Accept: : application/json
+Content-Type: application/json

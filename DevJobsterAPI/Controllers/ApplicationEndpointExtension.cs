@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using DevJobsterAPI.ApiModels;
 using DevJobsterAPI.Common;
 using DevJobsterAPI.Database.Abstract;
 using DevJobsterAPI.DatabaseModels.RequestModels.Vacancy;
@@ -14,20 +15,26 @@ public static class ApplicationEndpointExtension
         var applicationGroup = app.MapGroup("/api/applications");
 
         applicationGroup.MapPost("/",
-                async Task<Results<Created<AddApplication>, BadRequest>> (
+                async Task<Results<Created<ApiResponse<AddApplication>>, BadRequest<ApiResponse<AddApplication>>>> (
                     AddApplication addApplication,
                     ClaimsPrincipal user,
                     IUserSpaceService userSpaceService) =>
                 {
                     var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                    if (userId is null) return TypedResults.BadRequest();
+                    if (userId is null)
+                        return TypedResults.BadRequest(ApiResponseFactory.Fail<AddApplication>(
+                            "User ID not found in claims", "INVALID_USER"));
 
-                    var applicationId =
-                        await userSpaceService.CreateApplicationAsync(Guid.Parse(userId), addApplication);
-                    return applicationId > 0
-                        ? TypedResults.Created($"/api/applications/{applicationId}", addApplication)
-                        : TypedResults.BadRequest();
+                    var applicationId = await userSpaceService.CreateApplicationAsync(Guid.Parse(userId), addApplication);
+        
+                    if (applicationId > 0)
+                        return TypedResults.Created(
+                            $"/api/applications/{applicationId}", 
+                            ApiResponseFactory.Success(addApplication, "Application created successfully"));
+                    else
+                        return TypedResults.BadRequest(ApiResponseFactory.Fail<AddApplication>(
+                            "Failed to create application", "CREATION_FAILED"));
                 })
             .WithValidation<Application>()
             .RequireAuthorization("UserOnly");

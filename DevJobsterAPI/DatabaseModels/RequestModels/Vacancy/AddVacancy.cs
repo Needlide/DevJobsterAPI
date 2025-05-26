@@ -12,7 +12,6 @@ public record AddVacancy
     public string TypeOfJob { get; init; }
     public string Location { get; init; }
     public string Country { get; init; }
-    public Guid RecruiterId { get; init; }
     public string? Benefits { get; init; }
 
     public Guid VacancyId { get; init; } = Guid.NewGuid();
@@ -28,8 +27,9 @@ public record AddVacancy
         string typeOfJob,
         string location,
         string country,
-        Guid recruiterId,
-        string? benefits = null)
+        string? benefits = null,
+        Guid vacancyId = default,
+        DateTime createdAt = default)
     {
         Title = title;
         Description = description;
@@ -39,8 +39,9 @@ public record AddVacancy
         TypeOfJob = typeOfJob;
         Location = location;
         Country = country;
-        RecruiterId = recruiterId;
         Benefits = benefits;
+        VacancyId = vacancyId == default ? Guid.NewGuid() : vacancyId;
+        CreatedAt = createdAt == default ? DateTime.UtcNow : createdAt;
     }
 
     // Optional constructor for internal mapping
@@ -54,7 +55,6 @@ public record AddVacancy
             vacancy.TypeOfJob,
             vacancy.Location,
             vacancy.Country,
-            vacancy.RecruiterId,
             vacancy.Benefits)
     {
         VacancyId = vacancy.VacancyId;

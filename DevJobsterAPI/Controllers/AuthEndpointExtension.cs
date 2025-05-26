@@ -1,9 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using DevJobsterAPI.ApiModels;
 using DevJobsterAPI.Common;
 using DevJobsterAPI.Database.Abstract;
 using DevJobsterAPI.DatabaseModels.RequestModels.Security;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DevJobsterAPI.Controllers;
@@ -15,19 +17,20 @@ public static class AuthEndpointExtension
         var authGroup = app.MapGroup("/api/auth");
 
         authGroup.MapPost("/login",
-            async (LoginRegisterModel loginRegisterModel, IUserManagementService userService,
+            async Task<Results<Ok<ApiResponse<TokenResponse>>, UnauthorizedHttpResult>> (
+                LoginRegisterModel loginRegisterModel, 
+                IUserManagementService userService,
                 IConfiguration configuration) =>
             {
                 var result = await userService.ValidateUserAsync(loginRegisterModel);
-                if (!result.Success)
-                    return Results.Unauthorized();
-
-                if (result.UserId == null || result.UserId == Guid.Empty || result.UserType == null)
-                    return Results.Unauthorized();
+                if (!result.Success || result.UserId == null || result.UserId == Guid.Empty || result.UserType == null)
+                    return TypedResults.Unauthorized();
 
                 var token = GenerateJwtToken(result.UserId.Value, result.UserType.Value, configuration);
-                return Results.Ok(new TokenResponse(token));
-            });
+                return TypedResults.Ok(ApiResponseFactory.Success(
+                    new TokenResponse(token), 
+                    "Authentication successful"));
+            }).AllowAnonymous();
 
         return app;
     }

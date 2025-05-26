@@ -10,7 +10,7 @@ public interface IUserSpaceService
 {
     Task<IEnumerable<Vacancy>> GetAllVacanciesAsync();
     Task<Vacancy?> GetVacancyByIdAsync(Guid vacancyId);
-    Task<int> CreateVacancyAsync(AddVacancy vacancy);
+    Task<int> CreateVacancyAsync(AddVacancy vacancy, Guid recruiterId);
     Task<int> UpdateVacancyAsync(UpdateVacancy vacancy);
     Task<int> DeleteVacancyAsync(Guid vacancyId);
 
@@ -18,6 +18,7 @@ public interface IUserSpaceService
     Task<IEnumerable<Application>> GetApplicationsByUserIdAsync(Guid userId);
     Task<IEnumerable<Application>> GetApplicationsByVacancyIdAsync(Guid vacancyId);
     Task<IEnumerable<Vacancy>> GetVacanciesByUserIdAsync(Guid userId);
+    Task<IEnumerable<Vacancy>> GetVacanciesByRecruiterIdAsync(Guid recruiterId);
 
     Task<IEnumerable<Chat>> GetChatsForUserAsync(Guid userId);
     Task<Chat?> GetChatByIdAsync(Guid chatId);

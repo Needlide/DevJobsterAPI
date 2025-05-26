@@ -13,6 +13,7 @@ using DevJobsterAPI.DatabaseModels.RequestModels.User.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 
@@ -51,6 +52,20 @@ builder.Services.AddAuthentication(options =>
     })
     .AddJwtBearer(options =>
     {
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                
+                var response = ApiResponseFactory.Fail<object>("Unauthorized", "UNAUTHORIZED");
+                
+                return context.Response.WriteAsJsonAsync(response);
+            }
+        };
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -74,22 +89,24 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RecruiterAndAdminOnly", policy => policy.RequireRole("Recruiter", "Admin"));
     options.AddPolicy("UserAndAdminOnly", policy => policy.RequireRole("Admin", "User"));
     options.AddPolicy("UserAndRecruiterOnly", policy => policy.RequireRole("Recruiter", "User"));
+
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
 });
 
 var app = builder.Build();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseExceptionHandler(errorApp =>
     errorApp.Run(async context =>
     {
         var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
         var exception = exceptionHandlerPathFeature?.Error;
-
+        
         var response = new ApiResponse<object>
         {
-            Success = false
+            Success = false,
+            Data = null
         };
 
         switch (exception)
@@ -124,6 +141,11 @@ app.UseExceptionHandler(errorApp =>
         await JsonSerializer.SerializeAsync(context.Response.Body, response,
             AppJsonSerializerContext.Default.ApiResponseObject);
     }));
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapAdminEndpoint();
 app.MapApplicationEndpoint();

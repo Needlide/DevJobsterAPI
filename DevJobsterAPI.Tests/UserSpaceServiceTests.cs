@@ -395,10 +395,10 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
-        await service.CreateVacancyAsync(addVacancy1);
-        await service.CreateVacancyAsync(addVacancy2);
-        await service.CreateVacancyAsync(addVacancy3);
+        await service.CreateVacancyAsync(addVacancy, vacancy.RecruiterId);
+        await service.CreateVacancyAsync(addVacancy1, vacancy1.RecruiterId);
+        await service.CreateVacancyAsync(addVacancy2, vacancy2.RecruiterId);
+        await service.CreateVacancyAsync(addVacancy3, vacancy3.RecruiterId);
 
         // Act
         var vacancies = await service.GetAllVacanciesAsync();
@@ -408,7 +408,7 @@ public class UserSpaceServiceTests : IAsyncLifetime
         Assert.NotEmpty(collection);
         Assert.Equal(expectedVacancies.Count, collection.Count);
     }
-
+    
     [Fact]
     public async Task GetVacancyByIdAsync()
     {
@@ -451,7 +451,7 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         var id = addVacancy.VacancyId;
 
@@ -520,12 +520,12 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         // Act
         var exception = await Assert
             .ThrowsAsync<UniqueConstraintViolationException>
-                (async () => await service.CreateVacancyAsync(addVacancy));
+                (async () => await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId));
 
         // Assert
         Assert.Contains("already exists", exception.Message.ToLower());
@@ -574,7 +574,7 @@ public class UserSpaceServiceTests : IAsyncLifetime
         var service = new UserSpaceService(_dbContext);
 
         // Act
-        var result = await service.CreateVacancyAsync(addVacancy);
+        var result = await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         // Assert
         Assert.Equal(1, result);
@@ -632,12 +632,11 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         UpdateVacancy updateVacancy = new
         (
             "updated",
-            321,
             "updated",
             "updated",
             "1", "2",
@@ -703,7 +702,7 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         var vacancyId = expectedVacancy.VacancyId;
 
@@ -759,7 +758,7 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         User user = new
         (
@@ -839,7 +838,7 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         User user = new
         (
@@ -926,8 +925,8 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
-        await service.CreateVacancyAsync(addVacancy1);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
+        await service.CreateVacancyAsync(addVacancy1, recruiter.RecruiterId);
 
         User user = new
         (
@@ -1018,7 +1017,7 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         User user = new
         (
@@ -1595,7 +1594,7 @@ public class UserSpaceServiceTests : IAsyncLifetime
 
         var service = new UserSpaceService(_dbContext);
 
-        await service.CreateVacancyAsync(addVacancy);
+        await service.CreateVacancyAsync(addVacancy, recruiter.RecruiterId);
 
         User user = new
         (

@@ -26,8 +26,7 @@ public partial class UserUpdateValidator : AbstractValidator<UserUpdate>
             .NotEmpty().WithMessage("Location is required")
             .Length(3, 250).WithMessage("Location must be between 3 and 250 characters");
         RuleFor(x => x.EnglishLevel)
-            .NotEmpty().WithMessage("English level is required")
-            .Length(1);
+            .NotEmpty().WithMessage("English level is required");
     }
 
     [GeneratedRegex(@"^(?:[0-9]|[1-9][0-9]|[1-9][0-9]{2})$")]

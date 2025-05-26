@@ -81,15 +81,13 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
                         INSERT INTO user_authentication (auth_id, user_id, password_hash)
                         VALUES (@AuthId, @UserId, @PasswordHash);
                     """;
-
-                userRegistration.UserAuthentication.UserId = userRegistration.User.UserId;
-
+                
                 await dbContext.Connection.ExecuteAsync(
                     authSql,
                     new
                     {
                         userRegistration.UserAuthentication.AuthId,
-                        userRegistration.UserAuthentication.UserId,
+                        userRegistration.User.UserId,
                         PasswordHash = PasswordService.HashPassword(userRegistration.UserAuthentication.Password)
                     },
                     transaction);
@@ -176,6 +174,20 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
         }
     }
 
+    public async Task<List<Recruiter>> GetRecruitersByIdsAsync(IEnumerable<Guid> recruiterIds)
+    {
+        var ids = recruiterIds.Distinct().ToList();
+
+        if (ids.Count == 0)
+            return [];
+
+        const string sql = "SELECT * FROM recruiters WHERE recruiter_id = ANY(@RecruiterIds);";
+
+        var recruiters = await dbContext.Connection.QueryAsync<Recruiter>(sql, new { RecruiterIds = ids });
+
+        return recruiters.ToList();
+    }
+
     public async Task<Recruiter?> GetRecruiterByIdAsync(Guid recruiterId)
     {
         try
@@ -233,14 +245,12 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
                         VALUES (@AuthId, @UserId, @PasswordHash);
                     """;
 
-                recruiterRegistration.UserAuthentication.UserId = recruiterRegistration.Recruiter.RecruiterId;
-
                 await dbContext.Connection.ExecuteAsync(
                     authSql,
                     new
                     {
                         recruiterRegistration.UserAuthentication.AuthId,
-                        recruiterRegistration.UserAuthentication.UserId,
+                        UserId = recruiterRegistration.Recruiter.RecruiterId,
                         PasswordHash = PasswordService.HashPassword(recruiterRegistration.UserAuthentication.Password)
                     },
                     transaction);
@@ -322,7 +332,7 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
         }
     }
 
-    public async Task<int> ResetPasswordAsync(UserAuthentication userAuthentication)
+    public async Task<int> ResetPasswordAsync(Guid userId, UserAuthentication userAuthentication)
     {
         try
         {
@@ -331,7 +341,7 @@ public class UserManagementService(IDbContext dbContext) : IUserManagementServic
             var passwordHash = PasswordService.HashPassword(userAuthentication.Password);
 
             return await dbContext.Connection.ExecuteAsync(sql,
-                new { NewPassword = passwordHash, userAuthentication.UserId });
+                new { NewPassword = passwordHash, userId });
         }
         catch (PostgresException e)
         {
