@@ -2,7 +2,7 @@ namespace DevJobsterAPI.Common.Exceptions.DatabaseExceptions;
 
 public class ConstraintViolationException : DatabaseException
 {
-    public ConstraintViolationException(string message, string constraintName, string tableName)
+    protected ConstraintViolationException(string message, string constraintName, string tableName)
         : base(message)
     {
         ConstraintName = constraintName;
