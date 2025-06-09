@@ -104,6 +104,13 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
     });
+    
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
 
 var app = builder.Build();
@@ -154,7 +161,7 @@ app.UseExceptionHandler(errorApp =>
     }));
 
 app.UseRouting();
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
