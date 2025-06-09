@@ -102,7 +102,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("https://needlide.github.io")
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials();
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
     });
 });
 
