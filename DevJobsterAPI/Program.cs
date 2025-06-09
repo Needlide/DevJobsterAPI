@@ -95,7 +95,20 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://needlide.github.io")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 app.UseExceptionHandler(errorApp =>
     errorApp.Run(async context =>
@@ -143,6 +156,7 @@ app.UseExceptionHandler(errorApp =>
     }));
 
 app.UseRouting();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
