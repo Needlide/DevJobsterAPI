@@ -108,8 +108,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseCors("AllowFrontend");
-
 app.UseExceptionHandler(errorApp =>
     errorApp.Run(async context =>
     {
@@ -156,6 +154,7 @@ app.UseExceptionHandler(errorApp =>
     }));
 
 app.UseRouting();
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
