@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Dapper;
 using DevJobsterAPI.ApiModels;
 using DevJobsterAPI.Common;
@@ -32,7 +34,15 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 
-// Database context setup
+// Database setup
+var keyVaultUrl = builder.Configuration["KeyVaultUrl"];
+const string secretName = "DevJobsterDB";
+
+var client = new SecretClient(new Uri(keyVaultUrl), new DefaultAzureCredential());
+KeyVaultSecret secret = client.GetSecret(secretName);
+
+builder.Configuration["ConnectionStrings:DevJobsterDB"] = secret.Value;
+
 builder.Services.AddScoped<IDbContext, DbContext>(_ =>
     new DbContext(builder.Configuration.GetConnectionString("DevJobsterDB")));
 
