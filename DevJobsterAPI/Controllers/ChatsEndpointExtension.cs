@@ -9,7 +9,7 @@ public static class ChatsEndpointExtension
 {
     public static WebApplication MapChatsEndpoint(this WebApplication app)
     {
-        var chatGroup = app.MapGroup("/api/chats");
+        var chatGroup = app.MapGroup("/api/chats").RequireCors("AllowFrontend");
 
         chatGroup.MapGet("/{chatId:guid}",
                 async Task<Results<Ok<Chat>, NotFound>> (Guid chatId, IUserSpaceService userSpaceService) =>

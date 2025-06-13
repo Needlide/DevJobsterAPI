@@ -16,7 +16,7 @@ public static class UserEndpointExtension
     public static WebApplication MapUserEndpoint(this WebApplication app)
 {
     var userGroup = app.MapGroup("/api/users")
-        .WithTags("Users"); // Swagger grouping
+        .WithTags("Users").RequireCors("AllowFrontend"); // Swagger grouping
 
     userGroup.MapGet("/", async (IUserManagementService service) =>
     {

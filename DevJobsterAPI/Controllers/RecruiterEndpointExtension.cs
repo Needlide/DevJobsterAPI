@@ -16,7 +16,7 @@ public static class RecruiterEndpointExtension
     public static WebApplication MapRecruiterEndpoint(this WebApplication app)
 {
     var recruiterGroup = app.MapGroup("/api/recruiters")
-        .WithTags("Recruiters"); // Swagger grouping
+        .WithTags("Recruiters").RequireCors("AllowFrontend"); // Swagger grouping
 
     recruiterGroup.MapGet("/", async (IUserManagementService userService) =>
     {

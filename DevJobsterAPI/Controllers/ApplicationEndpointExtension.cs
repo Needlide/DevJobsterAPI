@@ -12,7 +12,7 @@ public static class ApplicationEndpointExtension
 {
     public static WebApplication MapApplicationEndpoint(this WebApplication app)
     {
-        var applicationGroup = app.MapGroup("/api/applications");
+        var applicationGroup = app.MapGroup("/api/applications").RequireCors("AllowFrontend");
 
         applicationGroup.MapPost("/",
                 async Task<Results<Created<ApiResponse<AddApplication>>, BadRequest<ApiResponse<AddApplication>>>> (

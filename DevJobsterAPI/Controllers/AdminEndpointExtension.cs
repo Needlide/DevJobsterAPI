@@ -13,7 +13,7 @@ public static class AdminEndpointExtension
 {
     public static WebApplication MapAdminEndpoint(this WebApplication app)
     {
-        var adminGroup = app.MapGroup("/api/admin");
+        var adminGroup = app.MapGroup("/api/admin").RequireCors("AllowFrontend");
 
         adminGroup.MapGet("/admins", async (IAdminService adminService) =>
         {

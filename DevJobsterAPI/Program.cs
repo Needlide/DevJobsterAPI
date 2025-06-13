@@ -89,21 +89,18 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddAuthorizationBuilder();
+var fallbackPolicy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("RecruiterOnly", policy => policy.RequireRole("Recruiter"));
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
-    options.AddPolicy("RecruiterAndAdminOnly", policy => policy.RequireRole("Recruiter", "Admin"));
-    options.AddPolicy("UserAndAdminOnly", policy => policy.RequireRole("Admin", "User"));
-    options.AddPolicy("UserAndRecruiterOnly", policy => policy.RequireRole("Recruiter", "User"));
-
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("RecruiterOnly", policy => policy.RequireRole("Recruiter"))
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
+    .AddPolicy("UserOnly", policy => policy.RequireRole("User"))
+    .AddPolicy("RecruiterAndAdminOnly", policy => policy.RequireRole("Recruiter", "Admin"))
+    .AddPolicy("UserAndAdminOnly", policy => policy.RequireRole("Admin", "User"))
+    .AddPolicy("UserAndRecruiterOnly", policy => policy.RequireRole("Recruiter", "User"))
+    .AddFallbackPolicy("Fallback", fallbackPolicy);
 
 builder.Services.AddCors(options =>
 {
@@ -156,11 +153,10 @@ app.UseExceptionHandler(errorApp =>
                 response.ErrorCode = "SERVER_ERROR";
 
 #if DEBUG
-                response.Message = exception?.Message ?? string.Empty;
+                  response.Message = exception?.Message ?? string.Empty;
 #else
-                    response.Message = "An unexpected error occurred";
+                response.Message = "An unexpected error occurred";
 #endif
-
                 break;
         }
 
@@ -171,7 +167,7 @@ app.UseExceptionHandler(errorApp =>
     }));
 
 app.UseRouting();
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

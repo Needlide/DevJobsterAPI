@@ -15,7 +15,7 @@ public static class VacancyEndpointExtension
     public static WebApplication MapVacancyEndpoint(this WebApplication app)
 {
     var vacancyGroup = app.MapGroup("/api/vacancies")
-        .WithTags("Vacancies"); // Swagger grouping
+        .WithTags("Vacancies").RequireCors("AllowFrontend"); // Swagger grouping
 
     vacancyGroup.MapGet("/",
         async (IUserSpaceService userSpaceService, IUserManagementService userManagementService) =>

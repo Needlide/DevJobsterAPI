@@ -11,7 +11,7 @@ public static class MessagesEndpointExtension
 {
     public static WebApplication MapMessagesEndpoint(this WebApplication app)
     {
-        var messageGroup = app.MapGroup("/api/messages");
+        var messageGroup = app.MapGroup("/api/messages").RequireCors("AllowFrontend");
 
         messageGroup.MapGet("/{messageId:guid}",
                 async Task<Results<Ok<MessageView>, NotFound>> (Guid messageId, IUserSpaceService userSpaceService) =>

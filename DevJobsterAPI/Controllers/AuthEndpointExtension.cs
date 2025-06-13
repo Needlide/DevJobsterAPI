@@ -14,8 +14,8 @@ public static class AuthEndpointExtension
 {
     public static WebApplication MapAuthEndpoint(this WebApplication app)
     {
-        var authGroup = app.MapGroup("/api/auth");
-
+        var authGroup = app.MapGroup("/api/auth").RequireCors("AllowFrontend");
+        
         authGroup.MapPost("/login",
             async Task<Results<Ok<ApiResponse<TokenResponse>>, UnauthorizedHttpResult>> (
                 LoginRegisterModel loginRegisterModel, 
